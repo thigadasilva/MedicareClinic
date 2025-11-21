@@ -1,8 +1,8 @@
 const { Consulta, Paciente, Profissonal } = require('../models')
 const { Op } = require('sequelize');
-const { deletar } = require('./pacienteController');
 
-//GET consultas
+
+//GET /consultas
 exports.listar = async (req, res) => {
     try{
         const { data, medicoId, pacienteId, status } = req.query;
@@ -10,7 +10,7 @@ exports.listar = async (req, res) => {
 
         //Aplica filtros se existirem na requisição
         if (data) where.data_consulta = data;
-        if (nedicoId) where.medicoId = medicoId;
+        if (medicoId) where.medicoId = medicoId;
         if (pacienteId) where.pacienteId = pacienteId;
         if (status) where.status = status;
 
@@ -45,7 +45,7 @@ exports.buscarPorId = async (req, res) =>{
 }
 
 //POST /consultas
-exposts.criar = async (req, res) => {
+exports.criar = async (req, res) => {
     try{
         //RN03: Verificar se horário já está ocupado
         const conflito = await Consulta.findOne({
@@ -71,7 +71,7 @@ exposts.criar = async (req, res) => {
             hora_consulta,
             tipo,
             motivo,
-            satus: 'agendada'
+            status: 'agendada'
         });
         res.status(201).json(novaConsulta);
     } catch (error) {
@@ -80,7 +80,7 @@ exposts.criar = async (req, res) => {
 }
 
 //PATCH /consultas/:id/status (Atualizar o status)
-exposts.atualizarStatus = async (req, res) => {
+exports.atualizarStatus = async (req, res) => {
     try{
         const { status } = req.body;
         const consulta = await Consulta.findByPk(req.params.id);
@@ -95,7 +95,7 @@ exposts.atualizarStatus = async (req, res) => {
 }
 
 //PATCH /consultas/:id/cancelar
-exposts.cancelar = async (req, res) => {
+exports.cancelar = async (req, res) => {
     try{
         const { motivo_cancelamento } = req.body;
         const consulta = await Consulta.findByPk(req.params.id);

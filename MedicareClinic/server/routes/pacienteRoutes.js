@@ -1,6 +1,9 @@
 const express = require('express')
 const router = express.Router()
 const pacienteController = require('../controllers/pacienteController')
+const authMiddleware = require('../middlewares/authMiddleware')
+
+router.use(authMiddleware)
 
 router.get('/pacientes', pacienteController.listar)
 router.get('/pacientes/:id', pacienteController.buscarPorId)
