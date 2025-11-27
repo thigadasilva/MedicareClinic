@@ -25,10 +25,13 @@ const mutations = {
 const actions = {
   async login({ commit }, credentials) {
     try {
-      const response = await api.post('/auth/login', {
-        login: credentials.login,
+      const response = await api.post('/api/auth/login', {
+        email: credentials.email,
         senha: credentials.senha,
       })
+
+ console.log('Resposta completa do backend:', response);
+      console.log('Dados da resposta (response.data):', response.data);
 
       const token = response.data.token
 

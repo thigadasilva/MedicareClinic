@@ -4,8 +4,9 @@
       <h2>Login</h2>
       <form @submit.prevent="handleLogin">
         <div class="form-group">
-          <label>Login:</label>
-          <input type="text" v-model="credentials.login" required />
+          <!-- Corrigido para usar credentials.email -->
+          <label>E-mail:</label> 
+          <input type="text" v-model="credentials.email" required />
         </div>
         <div class="form-group">
           <label>Senha:</label>
@@ -34,31 +35,39 @@ export default {
     const store = useStore()
     const router = useRouter()
 
+    // Use 'ref' para criar um objeto reativo para AMBOS os campos
     const credentials = ref({
-      login: '',
-      senha: '',
-    })
+      email: '',
+      senha: ''
+    });
 
     const loading = ref(false)
     const error = ref('')
 
     const handleLogin = async () => {
+      // Use o objeto credentials.value diretamente
+      const payload = {
+        email: credentials.value.email,
+        senha: credentials.value.senha
+      }
+
       loading.value = true
       error.value = ''
 
-      const result = await store.dispatch('auth/login', credentials.value)
+      // Passe o payload para a action do Vuex
+      const result = await store.dispatch('auth/login', payload)
 
       if (result.success) {
         router.push('/produtos')
       } else {
-        error.value = result.message
+        error.value = result.message || 'Erro ao fazer login. Verifique suas credenciais.'
       }
 
       loading.value = false
     }
 
     return {
-      credentials,
+      credentials, // Retorne o objeto credentials reativo
       loading,
       error,
       handleLogin,
