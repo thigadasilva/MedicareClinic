@@ -2,27 +2,31 @@ import api from '@/services/api'
 
 const state = {
   pacientes: [],
+  pacienteAtivo: null,
   loading: false,
-  error: null,
+  error: null
 }
 
 const mutations = {
   SET_LOADING(state, status) {
     state.loading = status
   },
-  SET_pacientes(state, pacientes) {
+  SET_PACIENTES(state, pacientes) {
     state.pacientes = pacientes
   },
-  ADD_paciente(state, paciente) {
+  SET_PACIENTE_ATIVO(state, paciente){
+    state.pacienteAtivo = paciente
+  },
+  ADD_PACIENTE(state, paciente) {
     state.pacientes.push(paciente)
   },
-  UPDATE_paciente(state, pacienteAtualizado) {
+  UPDATE_PACIENTE(state, pacienteAtualizado) {
     const index = state.pacientes.findIndex((p) => p.id === pacienteAtualizado.id)
     if (index != -1) {
       state.pacientes.splice(index, 1, pacienteAtualizado)
     }
   },
-  DELETE_paciente(state, pacienteId) {
+  DELETE_PACIENTE(state, pacienteId) {
    state.pacientes = state.pacientes.filter((p) => p.id != pacienteId)
   },
   SET_ERROR(state, error) {
@@ -45,14 +49,42 @@ const actions = {
       commit('SET_LOADING', false)
     }
   },
+  async fetchPacienteDetalhes({commit}, pacienteId){
+    commit('SET_LOADING', true)
+    commit('SET_ERROR', null)
+
+    try{
+      const response = await api.get(`/pacientes/${pacienteId}`)
+
+      commit('SET_PACIENTE_ATIVO', response.data)
+
+      return { success: true}
+    } catch(error){
+      console.error('Erro ao buscar detalhes do paciente: ', error)
+      commit('SET_ERROR', 'Erro ao carregar detalhes do paciente!')
+      return {success: false}
+    } finally{
+      commit('SET_LOADING', false)
+    }
+  },
 
   async createPaciente({ commit }, paciente) {
     try {
       const response = await api.post('/pacientes', {
         nome: paciente.nome,
-        preco: parseFloat(paciente.preco),
+        cpf: paciente.cpf,
+        data_nascimento: paciente.data_nascimento,
+        telefone: paciente.telefone,
+        email: paciente.email,
+        endereco: paciente.endereco,
+        cidade: paciente.cidade,
+        estado: paciente.estado,
+        cep: paciente.cep,
+        convenio: paciente.convenio,
+        numero_convenio: paciente.numero_convenio,
+        ativo: paciente.ativo
       })
-      commit('ADD_paciente', response.data)
+      commit('ADD_PACIENTE', response.data)
       return { success: true }
     } catch (error) {
       console.error('Erro ao criar paciente:', error)
@@ -66,9 +98,17 @@ const actions = {
     try {
       const response = await api.put(`/pacientes/${paciente.id}`, {
         nome: paciente.nome,
-        preco: parseFloat(paciente.preco),
+        telefone: paciente.telefone,
+        email: paciente.email,
+        endereco: paciente.endereco,
+        cidade: paciente.cidade,
+        estado: paciente.estado,
+        cep: paciente.cep,
+        convenio: paciente.convenio,
+        numero_convenio: paciente.numero_convenio,
+        ativo: paciente.ativo
       })
-      commit('UPDATE_paciente', response.data)
+      commit('UPDATE_PACIENTE', response.data)
       return { success: true }
     } catch (error) {
       console.error('Erro ao atualizar paciente:', error)
@@ -81,7 +121,7 @@ const actions = {
   async deletePaciente({ commit }, pacienteId) {
     try {
       await api.delete(`/pacientes/${pacienteId}`)
-      commit('DELETE_paciente', pacienteId)
+      commit('DELETE_PACIENTE', pacienteId)
       return { success: true }
     } catch (error) {
       console.error('Erro ao deletar paciente:', error)

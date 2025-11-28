@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import store from '@/store'
 import Login from '../views/Login.vue'
+import Home from '../views/Home.vue'
 
 const routes = [
   {
@@ -12,6 +13,12 @@ const routes = [
     name: 'Login',
     component: Login,
     meta: { requiresGuest: true },
+  },
+  {
+    path: '/home',
+    name: 'Home',
+    component: Home,
+    meta: {requiresAuth: true}
   }
 ]
 
@@ -26,7 +33,7 @@ router.beforeEach((to, from, next)=>{
   if(to.meta.requiresAuth && !isAuthenticated){
     next('/login')
   } else if (to.meta.requiresGuest && isAuthenticated){
-    next('/pacientes')
+    next('/home')
   }else{
     next()
   }

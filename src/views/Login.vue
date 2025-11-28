@@ -58,7 +58,7 @@ export default {
       const result = await store.dispatch('auth/login', payload)
 
       if (result.success) {
-        router.push('/produtos')
+        router.push('/home')
       } else {
         error.value = result.message || 'Erro ao fazer login. Verifique suas credenciais.'
       }
