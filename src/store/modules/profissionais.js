@@ -103,3 +103,17 @@ const actions = {
         }
     }
 }
+
+const getters = {
+    profissionais: (state) => state.profissionais,
+    loading: (state) => state.loading,
+    error: (state) => state.error
+}
+
+export default {
+    namespaced: true,
+    state,
+    mutations,
+    actions,
+    getters
+}
