@@ -91,7 +91,7 @@ const actions = {
     },
     async deleteProfissional({commit}, profissionalId){
         try {
-            await api.delete(`/pacientes/${profissionalId}`)
+            await api.delete(`/profissionais/${profissionalId}`)
             commit('DELETE_PROFISSIONAL', profissionalId)
             return { success: true}
         } catch (error) {
