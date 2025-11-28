@@ -31,7 +31,7 @@ const mutations = {
   },
   SET_ERROR(state, error) {
     state.error = error
-  },
+  }
 }
 
 const actions = {
@@ -43,8 +43,8 @@ const actions = {
       const response = await api.get('/pacientes')
       commit('SET_pacientes', response.data)
     } catch (error) {
-      console.error('Error ao buscar pacientes:', error)
-      commit('SET_ERROR', error.response?.data?.message || 'Error ao carregar pacientes')
+      console.error('Erro ao buscar pacientes:', error)
+      commit('SET_ERROR', error.response?.data?.message || 'Erro ao carregar pacientes')
     } finally {
       commit('SET_LOADING', false)
     }
@@ -90,13 +90,13 @@ const actions = {
       console.error('Erro ao criar paciente:', error)
       return {
         success: false,
-        message: error.response?.data?.message || 'Error ao criar paciente',
+        message: error.response?.data?.message || 'Erro ao criar paciente'
       }
     }
   },
   async updatePaciente({ commit }, paciente) {
     try {
-      const response = await api.put(`/pacientes/${paciente.id}`, {
+      const response = await api.patch(`/pacientes/${paciente.id}`, {
         nome: paciente.nome,
         telefone: paciente.telefone,
         email: paciente.email,
@@ -111,10 +111,10 @@ const actions = {
       commit('UPDATE_PACIENTE', response.data)
       return { success: true }
     } catch (error) {
-      console.error('Erro ao atualizar paciente:', error)
+      console.error('Erro ao atualizar paciente: ', error)
       return {
         success: false,
-        message: error.response?.data?.message || 'Erro ao atualizar paciente!',
+        message: error.response?.data?.message || 'Erro ao atualizar paciente!'
       }
     }
   },
