@@ -4,7 +4,6 @@
       <h2>Login</h2>
       <form @submit.prevent="handleLogin">
         <div class="form-group">
-          <!-- Corrigido para usar credentials.email -->
           <label>E-mail:</label> 
           <input type="text" v-model="credentials.email" required />
         </div>
