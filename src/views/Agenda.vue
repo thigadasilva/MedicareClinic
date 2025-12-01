@@ -1,5 +1,5 @@
 <template>
-    <h1>HOME</h1>
+    <h1>Agenda</h1>
 
     <button @click="handleLogout">Logout</button>
 </template>

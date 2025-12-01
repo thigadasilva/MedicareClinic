@@ -19,6 +19,11 @@ const mutations = {
   },
   SET_USER(state, user) {
     state.user = user
+     if (user) {
+    localStorage.setItem('user', JSON.stringify(user))
+  } else {
+    localStorage.removeItem('user')
+  }
   },
 }
 
@@ -34,9 +39,10 @@ const actions = {
       console.log('Dados da resposta (response.data):', response.data);
 
       const token = response.data.token
+      const user = response.data.user
 
       commit('SET_TOKEN', token)
-      commit('SET_USER', { login: credentials.login })
+      commit('SET_USER', user)
 
       return { success: true }
     } catch (error) {

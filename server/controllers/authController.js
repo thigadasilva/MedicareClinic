@@ -43,7 +43,16 @@ exports.login = async (req, res) => {
       { expiresIn: '8h' }
     );
 
-    res.json({ token });
+    res.json({ 
+      token,
+      user: {
+    id: profissional.id,
+    nome: profissional.nome,
+    email: profissional.email,
+    perfil: profissional.perfil,
+    status: profissional.status
+  }
+     });
   } catch (err) {
     console.error(err);
     res.status(500).json({ erro: 'Erro no login.' });
@@ -101,7 +110,7 @@ exports.logout = async (req, res) => {
 exports.me = async (req, res) => {
   try {
     const profissional = await Profissional.findByPk(req.user.id, {
-      attributes: { exclude: ['senha_hash'] }
+      attributes: { exclude: ['senha'] }
     });
     if (!profissional) {
       return res.status(404).json({ erro: 'Usuário não encontrado.' });

@@ -47,7 +47,7 @@ export default {
       // Use o objeto credentials.value diretamente
       const payload = {
         email: credentials.value.email,
-        senha: credentials.value.senha
+        senha: credentials.value.senha, 
       }
 
       loading.value = true
@@ -57,7 +57,21 @@ export default {
       const result = await store.dispatch('auth/login', payload)
 
       if (result.success) {
-        router.push('/home')
+        const perfil = store.getters['auth/user']?.perfil
+        const perfilRoutes = {
+  admin: '/dashboard',
+  medico: '/agenda',
+  recepcionista: '/consultas'
+}
+const destino = perfilRoutes[perfil]
+
+if (destino) {
+  router.push(destino)
+} else {
+  console.error('Perfil não reconhecido:', perfil)
+  store.dispatch('auth/logout')
+  error.value = 'Seu perfil não tem acesso ao sistema.'
+}
       } else {
         error.value = result.message || 'Erro ao fazer login. Verifique suas credenciais.'
       }
