@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
 <div class="container">
 
     <!-- SIDEBAR -->
@@ -123,6 +124,12 @@
 
 
 
+=======
+    <h1>Dashboard</h1>
+
+    <button @click="handleLogout">Logout</button>
+</template>
+>>>>>>> e0b543cc046d8b6d152ce97bf2093db3a88fcf5d
 <script>
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
@@ -141,6 +148,7 @@ export default {
   }
 }
 
+<<<<<<< HEAD
 
 
 
@@ -356,3 +364,7 @@ main {
 .cancelada { background: #fee2e2; color: #991b1b; }
 
 </style>
+=======
+</script>
+<style scoped></style>
+>>>>>>> e0b543cc046d8b6d152ce97bf2093db3a88fcf5d
