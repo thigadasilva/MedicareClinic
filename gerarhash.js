@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 
-const senha = 'Recep@123'; // <-- Coloque sua senha temporária aqui
+const senha = 'diegobroxa'; // <-- Coloque sua senha temporária aqui
 const saltRounds = 10; // O número de 'rounds' de salt (10 é um padrão seguro)
 
 bcrypt.hash(senha, saltRounds, function(err, hash) {

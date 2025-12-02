@@ -69,6 +69,16 @@ const Paciente = sequelize.define('Paciente', {
       model: 'Profissional',
     },
   },
+    createdAt: {
+  type: DataTypes.DATE,
+  allowNull: false,
+  defaultValue: sequelize.NOW
+},
+updatedAt: {
+  type: DataTypes.DATE,
+  allowNull: false,
+  defaultValue: sequelize.NOW
+}
 })
 
 module.exports = Paciente

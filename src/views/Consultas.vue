@@ -1,6 +1,8 @@
 <template>
     <h1>Consultas</h1>
 
+    
+
     <button @click="handleLogout">Logout</button>
 </template>
 <script>
