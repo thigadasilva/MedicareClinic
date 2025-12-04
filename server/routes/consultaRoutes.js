@@ -4,7 +4,6 @@ const consultaController = require('../controllers/consultaController')
 const authMiddleware = require('../middlewares/authMiddleware')
 
 
-
 router.get('/', consultaController.listar)
 router.get('/:id', consultaController.buscarPorId)
 router.post('/', consultaController.criar)
