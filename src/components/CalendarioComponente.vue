@@ -1,18 +1,18 @@
 <template>
-<vue-cal
+<vue-cal 
+locale="pt-br"
 default-view="week"
 :time-step="30"
 :events="events"
 :on-event-click="handleEventClickInternal"
-class="vue-cal--green-theme"
-:locale-data="ptBR"
+class="vuecal--blue-theme"
+style="height: 450px;"
 />
 </template>
 
 <script setup>
 import VueCal from 'vue-cal';
 import 'vue-cal/dist/vuecal.css';
-import ptBR from 'vue-cal/dist/i18n/pt-br.es.js'; 
 
 
 const props = defineProps({
@@ -31,9 +31,6 @@ const handleEventClickInternal = (event, domEvent) => {
 
 </script>
 <style scoped>
-.vue-cal-green-theme {
- height: 600px;
-}
 
 .status-green{background-color: #e0f2f1; border-color: #00796b;}
 .status-green{background-color: #fffde7; border-color: #fbc02d;}

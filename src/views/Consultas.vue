@@ -1,6 +1,4 @@
 <template>
-
-
    <div class="container">
 
     <!-- Sidebar -->
@@ -8,7 +6,7 @@
         <div class="brand">
             <div class="icon">+</div>
             <div>
-                <h2>MediPlus</h2>
+                <h2>Medicare</h2>
                 <span>Clínica</span>
             </div>
         </div>
@@ -29,7 +27,7 @@
             <a href="#" class="item">Médicos</a>
         </nav>
 
-        <a class="logout">⟵ Sair</a>
+        <a class="logout" @click="handleLogout">⟵ Sair</a>
     </aside>
 
     <!-- Conteúdo principal -->

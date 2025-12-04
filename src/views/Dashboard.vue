@@ -6,7 +6,7 @@
         <div class="logo">
             <div class="icon">+</div>
             <div>
-                <h1>MediPlus</h1>
+                <h1>Medicare</h1>
                 <span>Clínica</span>
             </div>
         </div>
@@ -26,7 +26,7 @@
             <a>Pacientes</a>
             <a>Médicos</a>
         </nav>
-        <button class="logout" @click="handleLogout">Logout</button>
+        <a class="logout" @click="handleLogout">⟵ Sair</a>
 
     </aside>
 

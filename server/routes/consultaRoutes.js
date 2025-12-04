@@ -3,6 +3,7 @@ const router = express.Router()
 const consultaController = require('../controllers/consultaController')
 const authMiddleware = require('../middlewares/authMiddleware')
 
+router.use(authMiddleware)
 
 router.get('/', consultaController.listar)
 router.get('/:id', consultaController.buscarPorId)
