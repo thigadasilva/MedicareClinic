@@ -1,4 +1,4 @@
-const { Consulta, Paciente, Profissonal } = require('../models')
+const { Consulta, Paciente, Profissional } = require('../models')
 const { Op } = require('sequelize');
 
 
@@ -18,7 +18,7 @@ exports.listar = async (req, res) => {
             where,
             include:[
                 { model: Paciente, as: 'paciente', attributes: ['id', 'nome', 'cpf'] },
-                { model: Profissonal, as: 'medico', attributes: ['id', 'nome', 'especialidade'] }
+                { model: Profissional, as: 'medico', attributes: ['id', 'nome', 'especialidade'] }
             ],
             order: [['data_consulta', 'ASC'], ['hora_consulta', 'ASC']]
         });
@@ -34,7 +34,7 @@ exports.buscarPorId = async (req, res) =>{
         const consulta = await Consulta.findByPk(req.params.id, {
             include:[
                 { model: Paciente, as: 'pacientes' },
-                { model: Profissonal, as: 'medico' }
+                { model: Profissional, as: 'medico' }
             ]
         });
         if(!consulta) return res.status(404).json({erro: 'Consulta não encontrada.'});
@@ -61,7 +61,7 @@ exports.criar = async (req, res) => {
         }
 
         //Gera protocolo Ex(AAAA-MM-DD-Horário)
-        const protocolo = `${new Date().getFullYear()}${Math.florr(Math.random() * 10000)}`;
+        const protocolo = `${new Date().getFullYear()}${Math.floor(Math.random() * 10000)}`;
 
         const novaConsulta = await Consulta.create({
             protocolo,

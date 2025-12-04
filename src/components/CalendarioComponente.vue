@@ -1,19 +1,19 @@
 <template>
 <vue-cal
-locale="pt-BR"
-:disable-views="['years', 'year', 'month', 'week', 'day', 'agenda']"
 default-view="week"
 :time-step="30"
 :events="events"
 :on-event-click="handleEventClickInternal"
-class="vue-cal-green-theme"
+class="vue-cal--green-theme"
+:locale-data="ptBR"
 />
 </template>
 
 <script setup>
 import VueCal from 'vue-cal';
 import 'vue-cal/dist/vuecal.css';
-import 'vue-cal/themes/green.css';
+import ptBR from 'vue-cal/dist/i18n/pt-br.es.js'; 
+
 
 const props = defineProps({
   events: {

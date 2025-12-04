@@ -1,11 +1,13 @@
 require('dotenv').config();
 const cors = require('cors')
 const express = require('express')
+const rotasPaciente = require('./routes/pacienteRoutes')
+const rotasAuth = require('./routes/authRoutes')
+const rotasConsultas = require('./routes/consultaRoutes')
+
 const app = express()
 const sequelize = require('./config/database')
 const PORT = process.env.PORT || 3000
-const rotasPaciente = require('./routes/pacienteRoutes')
-const rotasAuth = require('./routes/authRoutes')
 
 console.log('Caminho do DB sendo usado:', process.env.DB_PATH); 
 
@@ -21,7 +23,8 @@ app.use((req, res, next) => {
 });
 
 app.use('/pacientes', rotasPaciente)
-app.use('/api/auth', rotasAuth);
+app.use('/api/auth', rotasAuth)
+app.use('/api/consultas', rotasConsultas)
 
 
 sequelize.sync().then(() => {
