@@ -1,0 +1,14 @@
+# Ignorar Variáveis de Ambiente
+.env
+
+# Diretórios e Arquivos de Build/Cache
+/build
+/dist
+/tmp
+*.log
+npm-debug.log*
+
+# Node.js
+/node_modules
+pnpm-lock.yaml
+yarn.lock
