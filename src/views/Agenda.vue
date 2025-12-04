@@ -15,7 +15,7 @@ import CalendarComponent from '@/components/CalendarioComponente.vue';
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import {ref, onMounted} from 'vue';
-import {parseISO, addMinutes, parse} from 'date-fns';
+import {addMinutes, parse} from 'date-fns';
 import axios from 'axios';
 
   const router = useRouter()
@@ -61,9 +61,6 @@ const buscarConsultas = async () => {
     }); 
     const apiConsultas= response.data;
 
-       console.log('DEBUG: Tipo de dado recebido:', typeof apiConsultas);
-    console.log('DEBUG: É um array?', Array.isArray(apiConsultas));
-    console.log('DEBUG: Conteúdo da resposta:', apiConsultas);
 
     calendarEvents.value = apiConsultas.map(consulta => {
         const startStringBR = `${consulta.data_consulta} ${consulta.hora_consulta}`;

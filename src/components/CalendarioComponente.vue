@@ -4,8 +4,9 @@ default-view="week"
 :time-step="30"
 :events="events"
 :on-event-click="handleEventClickInternal"
-class="vue-cal--green-theme"
+class="vuecal--green-theme"
 :locale-data="ptBR"
+style="height: 450px"
 />
 </template>
 
@@ -31,8 +32,9 @@ const handleEventClickInternal = (event, domEvent) => {
 
 </script>
 <style scoped>
-.vue-cal-green-theme {
- height: 600px;
+.vue-cal--green-theme {
+ height: 450px;
+ color: #333;
 }
 
 .status-green{background-color: #e0f2f1; border-color: #00796b;}
