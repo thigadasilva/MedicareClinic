@@ -15,11 +15,11 @@ exports.listar = async (req, res) => {
         if (status) where.status = status;
 
         const consultas = await Consulta.findAll({
-            where,
+            where, 
             include:[
                 { model: Paciente, as: 'paciente', attributes: ['id', 'nome', 'cpf'] },
                 { model: Profissional, as: 'medico', attributes: ['id', 'nome', 'especialidade'] }
-            ],
+            ], 
             order: [['data_consulta', 'ASC'], ['hora_consulta', 'ASC']]
         });
         res.json(consultas);

@@ -6,9 +6,9 @@ const Consulta = require('./consultaModel')
 const Atendimento = require('./atendimentoModel')
 
 Paciente.hasMany(Consulta, { foreignKey: 'pacienteId' })
-Consulta.belongsTo(Paciente, { foreignKey: 'pacienteId' })
+Consulta.belongsTo(Paciente, { as: 'paciente', foreignKey: 'pacienteId' })
 
-Profissional.hasMany(Consulta, { foreignKey: 'medicoId' })
+Profissional.hasMany(Consulta, { as: 'medico', foreignKey: 'medicoId' })
 Consulta.belongsTo(Profissional, { as: 'medico', foreignKey: 'medicoId' })
 
 Consulta.hasOne(Atendimento, { foreignKey: 'consultaId' })

@@ -15,7 +15,7 @@ import CalendarComponent from '@/components/CalendarioComponente.vue';
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import {ref, onMounted} from 'vue';
-import {parseISO, addMinutes} from 'date-fns';
+import {parseISO, addMinutes, parse} from 'date-fns';
 import axios from 'axios';
 
   const router = useRouter()
@@ -66,7 +66,8 @@ const buscarConsultas = async () => {
     console.log('DEBUG: Conteúdo da resposta:', apiConsultas);
 
     calendarEvents.value = apiConsultas.map(consulta => {
-        const startDateTime = parseISO(`${consulta.data_consulta}T${consulta.hora_consulta}`);
+        const startStringBR = `${consulta.data_consulta} ${consulta.hora_consulta}`;
+        const startDateTime = parse(startStringBR, 'dd/MM/yyyy HH:mm', new Date());
         const endDateTime = addMinutes(startDateTime, 30); // RN06: +30 min
 
         return {
