@@ -194,9 +194,8 @@ body {
     width: 36px;
     height: 36px;
     background: #0a73ff;
-    color: white;
-    font-weight: bold;
-    border-radius: 8px;
+    color: #fff;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -221,9 +220,10 @@ body {
 }
 
 .avatar {
-    background: #d1d5db;
-    width: 38px;
-    height: 38px;
+    background: #d8e3fc;
+    color: #003399;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
@@ -240,7 +240,7 @@ nav {
 }
 
 nav a {
-    padding: 12px;
+    padding: 12px 10px;
     border-radius: 8px;
     cursor: pointer;
     font-size: 15px;
@@ -248,7 +248,8 @@ nav a {
 
 nav a:hover,
 nav a.active {
-    background: #e5e7eb;
+    background: #e9f0ff;
+    color: #0a73ff;
 }
 
 .logout {
