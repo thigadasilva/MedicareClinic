@@ -15,16 +15,16 @@
             <div class="avatar">DC</div>
             <div>
                 <p class="username">Dr. Carlos Admin</p>
-                <span class="role">Administrador</span>
+                <span class="role">Médico</span>
             </div>
         </div>
 
         <nav class="menu">
-            <a href="#" class="item" @click="handleDashboard">Dashboard</a>
+            <a v-if="userRole === 'admin'" href="#" class="item" @click="handleDashboard">Dashboard</a>
             <a href="#" class="item active">Agenda</a>
-            <a href="#" class="item" @click="handleConsultas">Consultas</a>
-            <a href="#" class="item">Pacientes</a>
-            <a href="#" class="item">Médicos</a>
+            <a v-if="userRole === 'admin'" href="#" class="item" @click="handleConsultas">Consultas</a>
+            <a v-if="userRole === 'admin'" href="#" class="item">Pacientes</a>
+            <a v-if="userRole === 'admin'" href="#" class="item">Médicos</a>
         </nav>
 
         <button class="logout" @click="handleLogout">
@@ -61,9 +61,11 @@ import {ref, onMounted} from 'vue';
 import {parseISO, addMinutes} from 'date-fns';
 import axios from 'axios';
 
+  
   const router = useRouter()
   const store = useStore()
   const calendarEvents = ref([])
+  const userRole = store.state.auth.user?.perfil
 
   const handleEventClickFromCalendar = (eventId) => {
   console.log(`Evento ${eventId} clicado. Redirecionando...`);

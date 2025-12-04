@@ -4,6 +4,8 @@ import Login from '@/views/Login.vue'
 import Dashboard from '@/views/Dashboard.vue'
 import Agenda from '@/views/Agenda.vue'
 import Consultas from '@/views/Consultas.vue'
+import Pacientes from '@/views/Pacientes.vue'
+import Medicos from '@/views/Medicos.vue'
 
 const routes = [
   {
@@ -33,6 +35,18 @@ const routes = [
     name: 'Consultas',
     component: Consultas,
     meta: {requiresAuth: true}
+  },
+  {
+    path: '/pacientes',
+    name: 'Pacientes',
+    component: Pacientes,
+    meta: {requiresAuth: true, requiresAdmin: true}
+  },
+  {
+    path: '/medicos',
+    name: 'Medicos',
+    component: Medicos,
+    meta: {requiresAuth: true, requiresAdmin: true}
   }
 ]
 
@@ -43,27 +57,36 @@ const router = createRouter({
 
 router.beforeEach((to, from, next)=>{
   const perfil = store.getters['auth/user']?.perfil
+  const isAuthenticated = store.getters['auth/isAuthenticated']
   const perfilRoutes = {
   admin: '/dashboard',
   medico: '/agenda',
   recepcionista: '/consultas'
 }
 
-  const isAuthenticated = store.getters['auth/isAuthenticated']
+  
 
+  // 1. Rotas que exigem login
   if (to.meta.requiresAuth && !isAuthenticated) {
-    next('/login')
-  } else if (to.meta.requiresAuth && to.meta.perfil && perfil !== to.meta.perfil) {
-    next(perfilRoutes[perfil] || '/login')
-  } else if (to.meta.requiresGuest && isAuthenticated) {
-    if (perfilRoutes[perfil]) {
-      next(perfilRoutes[perfil])
-    } else {
-      store.dispatch('auth/logout')
-      next('/login')
-    }
-  } else {
-    next()
-  }})
+    return next('/login')
+  }
+
+  // 2. Rotas que exigem admin
+  if (to.meta.requiresAdmin && perfil !== 'admin') {
+  if (!perfil) {
+    store.dispatch('auth/logout')
+    return next('/login')
+  }
+  return next(perfilRoutes[perfil] || '/login')
+}
+
+  // 3. Rotas guest (login)
+  if (to.meta.requiresGuest && isAuthenticated) {
+    return next(perfilRoutes[perfil] || '/login')
+  }
+
+  // 4. Caso padrão
+  next()
+})
 
 export default router

@@ -15,16 +15,16 @@
             <div class="avatar">DC</div>
             <div>
                 <p class="username">Dr. Carlos Admin</p>
-                <span class="role">Administrador</span>
+                <span class="role">Recepção</span>
             </div>
         </div>
 
         <nav class="menu">
-            <a href="#" class="item" @click="handleDashboard">Dashboard</a>
-            <a href="#" class="item" @click="handleAgenda">Agenda</a>
-            <a href="#" class="item active">Consultas</a>
-            <a href="#" class="item">Pacientes</a>
-            <a href="#" class="item">Médicos</a>
+            <a v-if="userRole === 'admin'" href="#" class="item" @click="handleDashboard">Dashboard</a>
+            <a v-if="userRole === 'admin'" href="#" class="item">Agenda</a>
+            <a href="#" class="item active" @click="handleConsultas">Consultas</a>
+            <a v-if="userRole === 'admin'" href="#" class="item">Pacientes</a>
+            <a v-if="userRole === 'admin'" href="#" class="item">Médicos</a>
         </nav>
 
         <button class="logout" @click="handleLogout">
