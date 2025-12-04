@@ -21,13 +21,16 @@
 
         <nav class="menu">
             <a href="#" class="item" @click="handleDashboard">Dashboard</a>
-            <a href="#" class="item">Agenda</a>
+            <a href="#" class="item" @click="handleAgenda">Agenda</a>
             <a href="#" class="item active">Consultas</a>
             <a href="#" class="item">Pacientes</a>
             <a href="#" class="item">Médicos</a>
         </nav>
 
-        <a class="logout" @click="handleLogout">⟵ Sair</a>
+        <button class="logout" @click="handleLogout">
+            <span class="icon">⟵</span>
+            <span>Sair</span>
+        </button>
     </aside>
 
     <!-- Conteúdo principal -->
@@ -131,13 +134,19 @@ export default {
       store.dispatch('auth/logout')
       router.push('/login') // redireciona para tela de login
     }
+
+    const handleAgenda = () => {
+        router.push('/agenda')
+    }
+
     const handleDashboard = () => {
       // Usa o método push do router para navegar para a rota '/dashboard'
       router.push('/dashboard') 
     }
     return { 
       handleLogout,
-      handleDashboard
+      handleDashboard,
+      handleAgenda
      }
   }
 }
@@ -233,10 +242,25 @@ body {
 }
 
 .logout {
-    display: block;
-    margin-top: 30px;
-    color: #777;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    background: transparent;
+    padding: 12px 16px;
+    font-size: 16px;
+    color: #6b7280; /* cinza igual ao da sua imagem */
     cursor: pointer;
+}
+
+
+.logout:hover{
+    background-color: #f3f4f6;
+    border-radius: 8px;
+}
+
+.logout:hover span{
+    color: #e63946;
 }
 
 /* Main */

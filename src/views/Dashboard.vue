@@ -173,7 +173,7 @@ body {
 /* SIDEBAR -------------------------------- */
 
 .sidebar {
-    width: 260px;
+    width: 240px;
     background: #ffffff;
     height: 100vh;
     padding: 20px;
@@ -193,25 +193,24 @@ body {
 .logo .icon {
     width: 36px;
     height: 36px;
-    background: #3b82f6;
+    background: #0a73ff;
     color: white;
     font-weight: bold;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
+    font-size: 24px;
 }
 
-.logo h1 {
-    font-size: 20px;
-    font-weight: 600;
-}
+  .logo h1 {
+      font-size: 24px;
+  }
 
-.logo span {
-    font-size: 12px;
-    color: #888;
-}
+  .logo span {
+      font-size: 16px;
+      color: #888;
+  }
 
 /* USER INFO */
 .user-info {

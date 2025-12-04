@@ -21,13 +21,16 @@
 
         <nav class="menu">
             <a href="#" class="item" @click="handleDashboard">Dashboard</a>
-            <a href="#" class="item">Agenda</a>
-            <a href="#" class="item active">Consultas</a>
+            <a href="#" class="item active">Agenda</a>
+            <a href="#" class="item" @click="handleConsultas">Consultas</a>
             <a href="#" class="item">Pacientes</a>
             <a href="#" class="item">Médicos</a>
         </nav>
 
-        <a class="logout" @click="handleLogout">⟵ Sair</a>
+        <button class="logout" @click="handleLogout">
+            <span class="icon">⟵</span>
+            <span>Sair</span>
+        </button>
     </aside>
 
     <!-- Conteúdo principal -->
@@ -66,6 +69,14 @@ import axios from 'axios';
   console.log(`Evento ${eventId} clicado. Redirecionando...`);
   router.push(`/consultas/${eventId}/atendimento`); 
 };
+
+const handleConsultas = () => {
+    router.push('/consultas')
+}
+
+const handleDashboard = () => {
+    router.push('/dashboard')
+}
 
  const handleLogout = () => {
       store.dispatch('auth/logout')
@@ -229,10 +240,25 @@ body {
 }
 
 .logout {
-    display: block;
-    margin-top: 30px;
-    color: #777;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    background: transparent;
+    padding: 12px 16px;
+    font-size: 16px;
+    color: #6b7280; /* cinza igual ao da sua imagem */
     cursor: pointer;
+}
+
+
+.logout:hover{
+    background-color: #f3f4f6;
+    border-radius: 8px;
+}
+
+.logout:hover span{
+    color: #e63946;
 }
 
 /* Main */
