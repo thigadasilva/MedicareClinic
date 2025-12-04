@@ -1,5 +1,4 @@
-# Ignorar Variáveis de Ambiente
-.env
+
 
 # Diretórios e Arquivos de Build/Cache
 /build
