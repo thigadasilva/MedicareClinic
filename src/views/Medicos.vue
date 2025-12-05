@@ -8,8 +8,12 @@
    />
 
    <main>
-       <h2 class="title">Médicos</h2>
-        <p class="subtitle">Visão geral dos médicos do hospital</p>
+       <div class="header">
+           <h2 class="title">Médicos</h2>
+            
+            <button class="novo"><img src="../assets/plus.png">Novo Médico</button>
+       </div>
+       <p class="subtitle">Visão geral dos médicos do hospital</p>
 
 <div class="search-box">
             <input type="text" placeholder="Buscar paciente..." />
@@ -20,19 +24,16 @@
               title="Dra. Ana Santos"
               subtitle="Cardiologista"
               description="CRM: 12345"
-              :actions="[{ label: 'Ver agenda', onClick: () => abrirAgenda('ana') }]"
             />
              <Card
               title="Dra. Carlos Souza"
               subtitle="Cardiologista"
               description="CRM: 12345"
-              :actions="[{ label: 'Ver agenda', onClick: () => abrirAgenda('ana') }]"
             />
              <Card
               title="Dra. Ana Santos"
               subtitle="Cardiologista"
               description="CRM: 12345"
-              :actions="[{ label: 'Ver agenda', onClick: () => abrirAgenda('ana') }]"
             />
         </div>
    </main>
@@ -161,6 +162,34 @@ nav a.active {
     cursor: pointer;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;          
+      
+}
+
+.novo{
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    width: auto;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-left: auto;
+    display: flex;          
+  align-items: center;     
+  gap: 6px; 
+}
+
+.novo img{
+    width: 16px;
+    height: 16px;
+}
+
+
 /* MAIN -------------------------------- */
 
 main {
@@ -175,7 +204,6 @@ main {
 
 .subtitle {
     color: #777;
-    margin-bottom: 30px;
 }
 
 /* CARDS */

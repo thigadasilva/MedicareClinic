@@ -8,14 +8,6 @@
     </div>
     <p class="subtitle">{{ subtitle }}</p>
     <p class="description">{{ description }}</p>
-
-    <div class="card-actions">
-      <slot name="actions">
-        <button v-for="action in actions" :key="action.label" @click="action.onClick">
-          {{ action.label }}
-        </button>
-      </slot>
-    </div>
   </div>
 </template>
 <script setup>
