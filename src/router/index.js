@@ -66,23 +66,31 @@ router.beforeEach((to, from, next)=>{
 
   
 
+
   // 1. Rotas que exigem login
   if (to.meta.requiresAuth && !isAuthenticated) {
-    return next('/login')
+    if (to.path !== '/login') {
+      return next('/login')
+    }
   }
 
   // 2. Rotas que exigem admin
   if (to.meta.requiresAdmin && perfil !== 'admin') {
-  if (!perfil) {
-    store.dispatch('auth/logout')
-    return next('/login')
+    if (!perfil) {
+      store.dispatch('auth/logout')
+      if (to.path !== '/login') {
+        return next('/login')
+      }
+    }
+    return next(perfilRoutes[perfil] || '/login')
   }
-  return next(perfilRoutes[perfil] || '/login')
-}
 
   // 3. Rotas guest (login)
   if (to.meta.requiresGuest && isAuthenticated) {
-    return next(perfilRoutes[perfil] || '/login')
+    const destino = perfilRoutes[perfil] || '/login'
+    if (to.path !== destino) {
+      return next(destino)
+    }
   }
 
   // 4. Caso padrão

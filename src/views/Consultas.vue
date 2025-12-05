@@ -1,38 +1,12 @@
 <template>
    <div class="container">
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="brand">
-            <div class="icon">+</div>
-            <div>
-                <h2>Medicare</h2>
-                <span>Clínica</span>
-            </div>
-        </div>
-
-        <div class="user-box">
-            <div class="avatar">DC</div>
-            <div>
-                <p class="username">Dr. Carlos Admin</p>
-                <span class="role">Recepção</span>
-            </div>
-        </div>
-
-        <nav class="menu">
-            <a v-if="userRole === 'admin'" href="#" class="item" @click="handleDashboard">Dashboard</a>
-            <a v-if="userRole === 'admin'" href="#" class="item">Agenda</a>
-            <a href="#" class="item active" @click="handleConsultas">Consultas</a>
-            <a v-if="userRole === 'admin'" href="#" class="item">Pacientes</a>
-            <a v-if="userRole === 'admin'" href="#" class="item">Médicos</a>
-        </nav>
-
-        <button class="logout" @click="handleLogout">
-            <span class="icon">⟵</span>
-            <span>Sair</span>
-        </button>
-    </aside>
-
+   <BarraLateral
+  :username="store.state.auth.user?.nome"
+  :userRole="store.state.auth.user?.perfil"
+  @navigate="handleNavigate"
+  @logout="handleLogout"
+   />
     <!-- Conteúdo principal -->
     <main class="main">
         <h1>Consultas</h1>
@@ -121,35 +95,24 @@
    </div>
     <button @click="handleLogout">Logout</button>
 </template>
-<script>
+<script setup>
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import BarraLateral from '@/components/barraLateral.vue';
 
-export default {
-  setup() {
+
     const store = useStore()
     const router = useRouter()
+
+const handleNavigate = (routeName) => {
+  router.push(`/${routeName}`)
+}
 
     const handleLogout = () => {
       store.dispatch('auth/logout')
       router.push('/login') // redireciona para tela de login
     }
 
-    const handleAgenda = () => {
-        router.push('/agenda')
-    }
-
-    const handleDashboard = () => {
-      // Usa o método push do router para navegar para a rota '/dashboard'
-      router.push('/dashboard') 
-    }
-    return { 
-      handleLogout,
-      handleDashboard,
-      handleAgenda
-     }
-  }
-}
 
 </script>
 <style scoped>

@@ -1,34 +1,12 @@
 <template>
 <div class="container">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="logo">
-            <div class="icon">+</div>
-            <div>
-                <h1>Medicare</h1>
-                <span>Clínica</span>
-            </div>
-        </div>
-
-        <div class="user-info">
-            <div class="avatar">DC</div>
-            <div>
-                <h3>Dr. Carlos Admin</h3>
-                <span>Administrador</span>
-            </div>
-        </div>
-
-        <nav>
-            <a class="active">Dashboard</a>
-            <a @click="handleAgenda">Agenda</a>
-            <a @click="handleConsultas">Consultas</a>
-            <a>Pacientes</a>
-            <a>Médicos</a>
-        </nav>
-        <a class="logout" @click="handleLogout">⟵ Sair</a>
-
-    </aside>
+ <BarraLateral
+  :username="store.state.auth.user?.nome"
+  :userRole="store.state.auth.user?.perfil"
+  @navigate="handleNavigate"
+  @logout="handleLogout"
+   />
 
     <!-- MAIN -->
     <main>
@@ -117,40 +95,23 @@
     </main>
     </div>
     </template>
-<script>
+<script setup>
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import BarraLateral from '@/components/barraLateral.vue';
 
-export default {
-  setup() {
+
+ 
     const store = useStore()
     const router = useRouter()
  
-    const handleConsultas = () =>{
-        router.push('/consultas')
-    }
-
-const handleAgenda = () =>{
-        router.push('/agenda')
-    }
-
+const handleNavigate = (routeName) => {
+  router.push(`/${routeName}`)
+}
     const handleLogout = () => {
       store.dispatch('auth/logout')
       router.push('/login') // redireciona para tela de login
     }
-
-    return { handleLogout,
-         handleConsultas,
-         handleAgenda
-     }
-  }
-}
-
-
-
-
-
-
 </script>
 
 <style scoped>

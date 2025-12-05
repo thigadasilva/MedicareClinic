@@ -1,38 +1,12 @@
 <template>
    <div class="container">
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="brand">
-            <div class="icon">+</div>
-            <div>
-                <h2>Medicare</h2>
-                <span>Clínica</span>
-            </div>
-        </div>
-
-        <div class="user-box">
-            <div class="avatar">DC</div>
-            <div>
-                <p class="username">Dr. Carlos Admin</p>
-                <span class="role">Médico</span>
-            </div>
-        </div>
-
-        <nav class="menu">
-            <a v-if="userRole === 'admin'" href="#" class="item" @click="handleDashboard">Dashboard</a>
-            <a href="#" class="item active">Agenda</a>
-            <a v-if="userRole === 'admin'" href="#" class="item" @click="handleConsultas">Consultas</a>
-            <a v-if="userRole === 'admin'" href="#" class="item">Pacientes</a>
-            <a v-if="userRole === 'admin'" href="#" class="item">Médicos</a>
-        </nav>
-
-        <button class="logout" @click="handleLogout">
-            <span class="icon">⟵</span>
-            <span>Sair</span>
-        </button>
-    </aside>
-
+   <BarraLateral
+  :username="store.state.auth.user?.nome"
+  :userRole="store.state.auth.user?.perfil"
+  @navigate="handleNavigate"
+  @logout="handleLogout"
+   />
     <!-- Conteúdo principal -->
     <main class="main">
         <h1>Agenda</h1>
@@ -58,32 +32,29 @@ import CalendarComponent from '@/components/CalendarioComponente.vue';
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import {ref, onMounted} from 'vue';
-import {parseISO, addMinutes} from 'date-fns';
+import {parseISO, addMinutes, parse} from 'date-fns';
 import axios from 'axios';
+import BarraLateral from '@/components/barraLateral.vue';
 
   
   const router = useRouter()
   const store = useStore()
   const calendarEvents = ref([])
-  const userRole = store.state.auth.user?.perfil
 
   const handleEventClickFromCalendar = (eventId) => {
   console.log(`Evento ${eventId} clicado. Redirecionando...`);
   router.push(`/consultas/${eventId}/atendimento`); 
 };
 
-const handleConsultas = () => {
-    router.push('/consultas')
+const handleNavigate = (routeName) => {
+  router.push(`/${routeName}`)
 }
 
-const handleDashboard = () => {
-    router.push('/dashboard')
+const handleLogout = () => {
+  store.dispatch('auth/logout')
+  router.push('/login')
 }
 
- const handleLogout = () => {
-      store.dispatch('auth/logout')
-      router.push('/login') // redireciona para tela de login
-    }
 
 const getStatusClass = (status) => {
     switch (status) {
@@ -118,9 +89,9 @@ const buscarConsultas = async () => {
     console.log('DEBUG: É um array?', Array.isArray(apiConsultas));
     console.log('DEBUG: Conteúdo da resposta:', apiConsultas);
 
-    calendarEvents.value = apiConsultas.map(consulta => {
-        const startDateTime = parseISO(`${consulta.data_consulta}T${consulta.hora_consulta}`);
-        const endDateTime = addMinutes(startDateTime, 30); // RN06: +30 min
+       calendarEvents.value = apiConsultas.map(consulta => {
+       const startDateTime = parse(`${consulta.data_consulta} ${consulta.hora_consulta}`, 'dd/MM/yyyy HH:mm', new Date())
+       const endDateTime = addMinutes(startDateTime, 30); // RN06: +30 min
 
         return {
             title: `${consulta.paciente.nome}`,
