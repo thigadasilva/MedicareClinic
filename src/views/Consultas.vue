@@ -93,7 +93,6 @@
        </section>
    </main>
    </div>
-    <button @click="handleLogout">Logout</button>
 </template>
 <script setup>
 import { useStore } from 'vuex'

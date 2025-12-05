@@ -25,7 +25,6 @@
     </div>
    </main>
    </div>
-    <button @click="handleLogout">Logout</button>
 </template>
 <script setup>
 import CalendarComponent from '@/components/CalendarioComponente.vue';

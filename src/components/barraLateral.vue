@@ -75,7 +75,8 @@ const rotasPermitidas = computed(() => rotasPorCargo[props.userRole] || [])
     padding: 20px;
     border-right: 1px solid #e2e2e2;
     height: 100vh;
-    position: fixed;
+    display: flex;
+    flex-direction: column;
 }
 
 .brand {
