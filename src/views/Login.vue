@@ -4,9 +4,10 @@
     <div class="left-panel">
       <div class="left-content">
         <h1>MedicareClinic</h1>
+      </div>
 
-        <img src="@/assets/login-image.png" class="left-image" />
-     
+      <div class="left-bottom-content">
+         <img src="@/assets/login-image.png" class="left-image" alt="ilustração" />
       </div>
     </div>
 
@@ -132,11 +133,13 @@ html, body {
   background: linear-gradient(135deg, #1D9290, #00c2c7);
   color: white;
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding-left: 3rem;
-  padding-top: 3rem;
+  flex-direction: column;     
+  justify-content: space-between;
+  padding-left: 2rem;
+  padding-top: 2rem;
+  min-height: 0;             
 }
+
 
 .left-content {
   max-width: 350px;
@@ -153,18 +156,28 @@ html, body {
   margin-bottom: 2rem;
 }
 
-.left-image {
-  width: 2000px;
-  max-width: 50rem;
-  margin-top: -180px;
-  margin-left: 150px;
-
-
+.left-bottom-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 2rem;
 }
+
+.left-image {
+  width: 70%;            
+  max-width: 1000px;     
+  min-width: 180px;
+  padding-left: 30%; ;     
+  height: 110%;
+  object-fit: contain;
+  display: block;
+}
+
 
 .right-panel {
   flex: 1;
-  background: #ffffff;
+  background: #f1f1f1;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -182,10 +195,22 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
+  animation: fadeIn 0.9s ease forwards;
+  opacity: 0;
 }
 
 .login-form {
   width: 100%;
+}
+
+@keyframes fadeIn {
+  from{
+    opacity: 0;
+    transform: translateY(20px);
+  } to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .login-form h2 {
