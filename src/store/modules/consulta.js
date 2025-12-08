@@ -11,7 +11,7 @@ const mutations = {
     SET_LOADING(state, status){
         state.loading = status
     },
-    SET_CONSULTA(state, consultas){
+    SET_CONSULTAS(state, consultas){
         state.consultas = consultas
     },
     SET_CONSULTA_ATIVO(state, consulta){
@@ -35,7 +35,7 @@ const mutations = {
 }
 
 const actions = {
-     async fetchConsulta({commit}){
+     async fetchConsultas({commit}){
         commit('SET_LOADING', true)
         commit('SET_ERROR', null)
 
@@ -105,7 +105,7 @@ const actions = {
     },
     async deleteConsulta({commit}, consultaId){
         try {
-            await api.delete(`/pacientes/${consultaId}`)
+            await api.delete(`/consultas/${consultaId}`)
             commit('DELETE_CONSULTA', consultaId)
             return { success: true}
         } catch (error) {
@@ -120,6 +120,11 @@ const actions = {
 
 const getters = {
     consultas: (state) => state.consultas,
+    totalConsultas: (state) => state.consultas.length,
+    totalAgendadas: (state) => state.consultas.filter(c => c.status === 'agendada').length,
+    totalRealizadas: (state) => state.consultas.filter(c => c.status === 'realizada').length,
+    totalCanceladas: (state) => state.consultas.filter(c => c.status === 'cancelada').length,
+    totalFaltas: (state) => state.consultas.filter(c => c.status === 'faltou').length,
     loading: (state) => state.loading,
     error: (state) => state.error
 }

@@ -3,7 +3,7 @@ import VuexPersistence from 'vuex-persist'
 import auth from './modules/auth'
 import pacientes from './modules/pacientes'
 import profissionais from './modules/profissionais'
-import consulta from './modules/consulta'
+import consultas from './modules/consulta'
 import atendimento from './modules/atendimento'
 
 const vuexLocal = new VuexPersistence({
@@ -16,7 +16,7 @@ export default createStore({
         auth,
         pacientes,
         profissionais,
-        consulta,
+        consultas,
         atendimento
     },
     plugins: [vuexLocal.plugin]

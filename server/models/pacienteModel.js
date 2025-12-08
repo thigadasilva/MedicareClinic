@@ -56,7 +56,7 @@ const Paciente = sequelize.define('Paciente', {
   },
   createdBy: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: 'Profissional',
       key: 'id',

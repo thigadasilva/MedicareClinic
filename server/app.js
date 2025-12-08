@@ -4,6 +4,7 @@ const express = require('express')
 const rotasPaciente = require('./routes/pacienteRoutes')
 const rotasAuth = require('./routes/authRoutes')
 const rotasConsultas = require('./routes/consultaRoutes')
+const rotasProfissionais = require('./routes/profissionalRoutes')
 
 const app = express()
 const sequelize = require('./config/database')
@@ -24,7 +25,8 @@ app.use((req, res, next) => {
 
 app.use('/pacientes', rotasPaciente)
 app.use('/api/auth', rotasAuth)
-app.use('/api/consultas', rotasConsultas)
+app.use('/profissionais', rotasProfissionais)
+app.use('/consultas', rotasConsultas)
 
 
 sequelize.sync().then(() => {

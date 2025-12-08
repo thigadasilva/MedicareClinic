@@ -17,82 +17,27 @@
         <div class="search-box">
             <input type="text" placeholder="Buscar paciente..." />
         </div>
-
-        <!-- CONSULTAS -->
-        <section class="consultas">
-            <h3 class="section-title">Consultas de Hoje</h3>
-
-            <div class="consulta">
-                <div class="left">
-                    <div class="circle">MS</div>
-                    <div>
-                        <strong>Maria Silva</strong>
-                        <p>Dr. João</p>
-                    </div>
-                </div>
-                <div class="right">
-                    <span class="hora">09:00</span>
-                    <span class="status confirmada">Confirmada</span>
-                </div>
-            </div>
-
-            <div class="consulta">
-                <div class="left">
-                    <div class="circle">CS</div>
-                    <div>
-                        <strong>Carlos Santos</strong>
-                        <p>Dra. Ana</p>
-                    </div>
-                </div>
-                <div class="right">
-                    <span class="hora">09:30</span>
-                    <span class="status confirmada">Confirmada</span>
-                </div>
-            </div>
-
-            <div class="consulta">
-                <div class="left">
-                    <div class="circle">AO</div>
-                    <div>
-                        <strong>Ana Oliveira</strong>
-                        <p>Dr. Pedro</p>
-                    </div>
-                </div>
-                <div class="right">
-                    <span class="hora">10:00</span>
-                    <span class="status pendente">Pendente</span>
-                </div>
-            </div>
-
-            <div class="consulta">
-                <div class="left">
-                    <div class="circle">JL</div>
-                    <div>
-                        <strong>José Lima</strong>
-                        <p>Dr. João</p>
-                    </div>
-                </div>
-                <div class="right">
-                    <span class="hora">10:30</span>
-                    <span class="status confirmada">Confirmada</span>
-                </div>
-            </div>
-
-            <div class="consulta">
-                <div class="left">
-                    <div class="circle">PC</div>
-                    <div>
-                        <strong>Paula Costa</strong>
-                        <p>Dra. Ana</p>
-                    </div>
-                </div>
-                <div class="right">
-                    <span class="hora">11:00</span>
-                    <span class="status cancelada">Cancelada</span>
-                </div>
-            </div>
-
-        </section>
+       
+<div class="cards">
+      <Card
+        title="Pacientes"
+        subtitle="Ativos"
+        :description="store.getters['pacientes/totalPacientesAtivos']"
+        :icon="pacientesIcon"
+      />
+      <Card
+        title="Médicos"
+        subtitle="Cadastrados"
+        :description="store.getters['profissionais/totalProfissionais']"
+         :icon="medicosIcon"
+      />
+ <Card
+  title="Consultas"
+  subtitle="Visão geral"
+  :description="`Total: ${store.getters['consultas/totalConsultas']} | Agendadas: ${store.getters['consultas/totalAgendadas']} | Realizadas: ${store.getters['consultas/totalRealizadas']} | Canceladas: ${store.getters['consultas/totalCanceladas']} | Faltou: ${store.getters['consultas/totalFaltas']}`"
+  :icon="consultasIcon"
+/>
+    </div>
 
     </main>
     </div>
@@ -101,12 +46,21 @@
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import BarraLateral from '@/components/barraLateral.vue';
-
-
+import Card from '@/components/Card.vue';
+import pacientesIcon from '@/assets/pacientes.svg'
+import medicosIcon from '@/assets/medicos.svg'
+import consultasIcon from '@/assets/consultas.svg'
+import { onMounted } from 'vue';
  
     const store = useStore()
     const router = useRouter()
  
+onMounted(() => {
+  store.dispatch('pacientes/fetchPacientes')
+  store.dispatch('profissionais/fetchProfissionais')
+  store.dispatch('consultas/fetchConsultas')
+})
+
 const handleNavigate = (routeName) => {
   router.push(`/${routeName}`)
 }
@@ -240,9 +194,10 @@ main {
 
 /* CARDS */
 .cards {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 40px;
+  display: flex;
+  justify-content: space-between; /* distribui igualmente */
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 .card {
@@ -250,6 +205,7 @@ main {
     padding: 20px;
     border-radius: 12px;
     flex: 1;
+    min-width: 250px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.07);
 }
 

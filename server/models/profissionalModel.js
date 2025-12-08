@@ -44,6 +44,10 @@ updatedAt: {
   allowNull: false,
   defaultValue: sequelize.NOW
 }
-})
+},
+{
+  tableName: 'Profissionals', // <-- força o nome certo
+  timestamps: true
+});
 
 module.exports = Profissional

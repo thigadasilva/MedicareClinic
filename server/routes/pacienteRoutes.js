@@ -7,11 +7,13 @@ const authMiddleware = require('../middlewares/authMiddleware')
 
 router.use(authMiddleware)
 
-router.get('/pacientes', pacienteController.listar)
-router.get('/pacientes/:id', pacienteController.buscarPorId)
-router.get('/pacientes/:id/historico', pacienteController.buscarHistorico)
-router.post('/pacientes', pacienteController.criar)
-router.put('/pacientes/:id', pacienteController.atualizar)
-router.delete('/pacientes/:id', pacienteController.deletar)
+router.get('/', pacienteController.listar)
+router.get('/:id', pacienteController.buscarPorId)
+router.get('/:id/historico', pacienteController.buscarHistorico)
+router.post('/', pacienteController.criar)
+router.patch('/:id', pacienteController.atualizar)
+router.delete('/:id', pacienteController.deletar)
+
+console.log('Rotas de pacientes carregadas');
 
 module.exports = router

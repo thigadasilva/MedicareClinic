@@ -1,0 +1,74 @@
+ <section class="consultas">
+            <h3 class="section-title">Consultas de Hoje</h3>
+
+            <div class="consulta">
+                <div class="left">
+                    <div class="circle">MS</div>
+                    <div>
+                        <strong>Maria Silva</strong>
+                        <p>Dr. João</p>
+                    </div>
+                </div>
+                <div class="right">
+                    <span class="hora">09:00</span>
+                    <span class="status confirmada">Confirmada</span>
+                </div>
+            </div>
+
+            <div class="consulta">
+                <div class="left">
+                    <div class="circle">CS</div>
+                    <div>
+                        <strong>Carlos Santos</strong>
+                        <p>Dra. Ana</p>
+                    </div>
+                </div>
+                <div class="right">
+                    <span class="hora">09:30</span>
+                    <span class="status confirmada">Confirmada</span>
+                </div>
+            </div>
+
+            <div class="consulta">
+                <div class="left">
+                    <div class="circle">AO</div>
+                    <div>
+                        <strong>Ana Oliveira</strong>
+                        <p>Dr. Pedro</p>
+                    </div>
+                </div>
+                <div class="right">
+                    <span class="hora">10:00</span>
+                    <span class="status pendente">Pendente</span>
+                </div>
+            </div>
+
+            <div class="consulta">
+                <div class="left">
+                    <div class="circle">JL</div>
+                    <div>
+                        <strong>José Lima</strong>
+                        <p>Dr. João</p>
+                    </div>
+                </div>
+                <div class="right">
+                    <span class="hora">10:30</span>
+                    <span class="status confirmada">Confirmada</span>
+                </div>
+            </div>
+
+            <div class="consulta">
+                <div class="left">
+                    <div class="circle">PC</div>
+                    <div>
+                        <strong>Paula Costa</strong>
+                        <p>Dra. Ana</p>
+                    </div>
+                </div>
+                <div class="right">
+                    <span class="hora">11:00</span>
+                    <span class="status cancelada">Cancelada</span>
+                </div>
+            </div>
+
+        </section>

@@ -40,8 +40,8 @@ const actions = {
     commit('SET_ERROR', null)
 
     try {
-      const response = await api.get('/pacientes')
-      commit('SET_pacientes', response.data)
+      const response = await api.get('/pacientes/')
+      commit('SET_PACIENTES', response.data)
     } catch (error) {
       console.error('Erro ao buscar pacientes:', error)
       commit('SET_ERROR', error.response?.data?.message || 'Erro ao carregar pacientes')
@@ -135,6 +135,8 @@ const actions = {
 
 const getters = {
   pacientes: (state) => state.pacientes,
+  totalPacientes: (state) => state.pacientes.length,
+  totalPacientesAtivos: (state) => state.pacientes.filter(p => p.ativo === true || p.ativo === 1 || p.ativo === 'true').length,
   loading: (state) => state.loading,
   error: (state) => state.error,
 }

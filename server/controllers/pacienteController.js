@@ -19,6 +19,7 @@ exports.buscarHistorico = async (req, res) => {
     })
 
     if (!paciente) res.status(404).json({ erro: 'Paciente não encontrado.' })
+      return res.json(paciente)
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao buscar consultas do paciente.' })
   }

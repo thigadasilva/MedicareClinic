@@ -35,7 +35,7 @@ const mutations = {
 }
 
 const actions = {
-    async fetchProfissional({commit}){
+    async fetchProfissionais({commit}){
         commit('SET_LOADING', true)
         commit('SET_ERROR', null)
 
@@ -106,6 +106,8 @@ const actions = {
 
 const getters = {
     profissionais: (state) => state.profissionais,
+    totalProfissionais: state => state.profissionais.length,
+    totalAtivos: state => state.profissionais.filter(p => p.ativo).length,
     loading: (state) => state.loading,
     error: (state) => state.error
 }

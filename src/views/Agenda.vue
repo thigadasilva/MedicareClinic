@@ -22,6 +22,41 @@
       :events="calendarEvents" 
       @event-clicked="handleEventClickFromCalendar" 
     />
+
+  <div class="consultas-list">
+  <h3 class="section-title">Consultas do dia</h3>
+  <div 
+    v-for="consulta in consultasHoje" 
+    :key="consulta.id" 
+    class="consulta"
+  >
+    <div class="icon user"></div>
+    <div class="info">
+      <strong>{{ consulta.paciente?.nome }}</strong><br />
+      <span>Médico: {{ consulta.medico?.nome }}</span><br />
+      <span>Protocolo: {{ consulta.protocolo }}</span>
+    </div>
+    <span class="time">{{ consulta.hora_consulta }}</span>
+   <span class="status" :class="getStatusClass(consulta.status)">
+  {{ consulta.status }}
+</span>
+
+    <!-- Botões de ação -->
+    <div class="actions">
+      <button class="btn btn-success" @click="atualizarStatus(consulta.id, 'confirmada')">
+        Confirmar
+      </button>
+      <button class="btn btn-danger" @click="cancelarConsulta(consulta.id)">
+        Cancelar
+      </button>
+      <button class="btn btn-primary" @click="atualizarStatus(consulta.id, 'realizada')">
+        Finalizar
+      </button>
+    </div>
+  </div>
+</div>
+
+
     </div>
    </main>
    </div>
@@ -31,10 +66,13 @@ import CalendarComponent from '@/components/CalendarioComponente.vue';
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import {ref, onMounted} from 'vue';
-import {parseISO, addMinutes, parse} from 'date-fns';
-import axios from 'axios';
+import { computed } from 'vue'
+import api from '../services/api';
+import {addMinutes, parse} from 'date-fns';
 import BarraLateral from '@/components/barraLateral.vue';
 
+
+  
   
   const router = useRouter()
   const store = useStore()
@@ -56,55 +94,90 @@ const handleLogout = () => {
 
 
 const getStatusClass = (status) => {
-    switch (status) {
-        case 'confirmada': return 'status-green';
-        case 'agendada': return 'status-yellow';
-        case 'cancelada': return 'status-red';
-        default: return '';
-    }
-};
+  switch (status) {
+    case 'confirmada': return 'status-green'
+    case 'agendada': return 'status-yellow'
+    case 'em_atendimento': return 'status-blue'
+    case 'realizada': return 'status-green-old' 
+    case 'cancelada': return 'status-red'
+    case 'faltou': return 'status-gray'
+    default: return ''
+  }
+}
+
+const consultasHoje = computed(() => {
+  const hoje = new Date()
+  const dia = hoje.getDate().toString().padStart(2, '0')
+  const mes = (hoje.getMonth() + 1).toString().padStart(2, '0')
+  const ano = hoje.getFullYear()
+  const hojeFormatado = `${dia}/${mes}/${ano}` // dd/MM/yyyy
+
+  return calendarEvents.value.filter(ev => {
+    // compara com o campo original vindo da API
+    return ev.originalDate === hojeFormatado
+  })
+})
 
 const buscarConsultas = async () => {
   try {
-    const token = store.state.auth.token;
-
-    if(!token){
-      console.error("Token de autenticação não encontrado.");
-      router.push('/login');
-      return;
+    const token = store.state.auth.token
+    if (!token) {
+      console.error("Token de autenticação não encontrado.")
+      router.push('/login')
+      return
     }
 
-    const response = await axios.get('/api/consultas', {
-      headers:{
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache',
-        'Expires': '0',
-        'Authorization': `Bearer ${token}`
+    const perfil = store.state.auth.user?.perfil
+    const params = {}
+
+    if (perfil === 'medico') {
+      params.medicoId = store.state.auth.user?.id
+    } else if (perfil === 'paciente') {
+      params.pacienteId = store.state.auth.user?.id
+    }
+
+    const response = await api.get('/consultas', { params })
+    const apiConsultas = response.data
+
+    calendarEvents.value = apiConsultas.map(consulta => {
+      const startDateTime = parse(`${consulta.data_consulta} ${consulta.hora_consulta}`, 'dd/MM/yyyy HH:mm', new Date())
+      const endDateTime = addMinutes(startDateTime, 30)
+
+      return {
+        ...consulta,
+        start: startDateTime,
+        end: endDateTime,
+        class: getStatusClass(consulta.status),
+        originalDate: consulta.data_consulta
       }
-    }); 
-    const apiConsultas= response.data;
-
-       console.log('DEBUG: Tipo de dado recebido:', typeof apiConsultas);
-    console.log('DEBUG: É um array?', Array.isArray(apiConsultas));
-    console.log('DEBUG: Conteúdo da resposta:', apiConsultas);
-
-       calendarEvents.value = apiConsultas.map(consulta => {
-       const startDateTime = parse(`${consulta.data_consulta} ${consulta.hora_consulta}`, 'dd/MM/yyyy HH:mm', new Date())
-       const endDateTime = addMinutes(startDateTime, 30); // RN06: +30 min
-
-        return {
-            title: `${consulta.paciente.nome}`,
-            start: startDateTime, 
-            end: endDateTime,
-            class: getStatusClass(consulta.status), 
-            id: consulta.id
-        };
-    });
-
+    })
   } catch (error) {
-    console.error("Erro ao carregar agenda:", error);
+    console.error("Erro ao carregar agenda:", error)
   }
-};
+}
+
+const atualizarStatus = async (id, novoStatus) => {
+  try {
+    await api.patch(`/consultas/${id}/status`, { status: novoStatus }, {
+      headers: { Authorization: `Bearer ${store.state.auth.token}` }
+    })
+    await buscarConsultas() // recarrega lista
+  } catch (error) {
+    console.error("Erro ao atualizar status:", error)
+  }
+}
+
+const cancelarConsulta = async (id) => {
+  try {
+    await api.patch(`/consultas/${id}/cancelar`, { motivo_cancelamento: 'Cancelado pelo admin' }, {
+      headers: { Authorization: `Bearer ${store.state.auth.token}` }
+    })
+    await buscarConsultas()
+  } catch (error) {
+    console.error("Erro ao cancelar consulta:", error)
+  }
+}
+
 
 onMounted(() => {
   buscarConsultas();
@@ -310,18 +383,42 @@ body {
     border-radius: 8px;
 }
 
-.finalizada { color: #2ecc71; background: #d9f7e8; }
-.andamento { color: #0a73ff; background: #dbe9ff; }
-.aguardando { color: #e7a400; background: #fff2cd; }
-.cancelada { color: #e74c3c; background: #ffe3df; }
+.status-green { color: #27ae60; background: #d9f7e8; }
+.status-green-old{ color: #145a32; background: #c8e6c9; }
+.status-yellow { color: #e7a400; background: #fff2cd; }
+.status-blue { color: #0a73ff; background: #dbe9ff; }
+.status-red { color: #e74c3c; background: #ffe3df; }
+.status-gray { color: #7f8c8d; background: #ecf0f1; }
+
+.actions {
+  display: flex;        /* coloca os botões lado a lado */
+  gap: 8px;             /* espaço entre eles */
+}
 
 .btn {
-    background: #0a73ff;
+    margin-top: 20px;
+    width: 100%;
     color: #fff;
+    padding: 12px;
     border: none;
-    padding: 6px 14px;
     border-radius: 8px;
     cursor: pointer;
+}
+
+.btn-success { background: #2ecc71; color: #fff; }
+.btn-danger  { background: #e74c3c; color: #fff; }
+.btn-primary { background: #3498db; color: #fff; }
+
+.btn-success:hover {
+  background: #27ae60;      /* verde mais escuro */
+}
+
+.btn-danger:hover {
+  background: #c0392b; /* vermelho mais escuro no hover */
+}
+
+.btn-primary:hover {
+  background: #21618c;      /* azul mais escuro */
 }
 
 /* Painel de Atendimento */
@@ -348,14 +445,5 @@ textarea {
     resize: none;
 }
 
-.btn-success {
-    margin-top: 20px;
-    width: 100%;
-    background: #2ecc71;
-    color: #fff;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-}
+
 </style>

@@ -28,12 +28,23 @@ exports.listar = async (req, res) => {
     }
 }
 
+exports.totalAgendadas = async (req, res) => {
+  try {
+    const total = await Consulta.count({
+      where: { status: 'agendada' }
+    })
+    res.json({ totalAgendadas: total })
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao contar consultas agendadas.' })
+  }
+}
+
 //GET /consultas/:id
 exports.buscarPorId = async (req, res) =>{
     try{
         const consulta = await Consulta.findByPk(req.params.id, {
             include:[
-                { model: Paciente, as: 'pacientes' },
+                { model: Paciente, as: 'paciente' },
                 { model: Profissional, as: 'medico' }
             ]
         });
@@ -46,38 +57,38 @@ exports.buscarPorId = async (req, res) =>{
 
 //POST /consultas
 exports.criar = async (req, res) => {
-    try{
-        //RN03: Verificar se horário já está ocupado
-        const conflito = await Consulta.findOne({
-            where: {
-                medicoId,
-                data_consulta,
-                hora_consulta,
-                status: { [Op.notIn]: ['cancelada', 'faltou'] }
-            }
-        });
-        if(conflito){
-            return res.status(400).json({erro: 'Horário indisponível par este médico.'})
-        }
+  try {
+    const { pacienteId, medicoId, data_consulta, hora_consulta, tipo, motivo } = req.body;
 
-        //Gera protocolo Ex(AAAA-MM-DD-Horário)
-        const protocolo = `${new Date().getFullYear()}${Math.floor(Math.random() * 10000)}`;
-
-        const novaConsulta = await Consulta.create({
-            protocolo,
-            pacienteId,
-            medicoId,
-            data_consulta,
-            hora_consulta,
-            tipo,
-            motivo,
-            status: 'agendada'
-        });
-        res.status(201).json(novaConsulta);
-    } catch (error) {
-        res.status(500).json({erro: 'Erro ao agendar consulta.', detalhe: erro.message})
+    const conflito = await Consulta.findOne({
+      where: {
+        medicoId,
+        data_consulta,
+        hora_consulta,
+        status: { [Op.notIn]: ['cancelada', 'faltou'] }
+      }
+    });
+    if (conflito) {
+      return res.status(400).json({ erro: 'Horário indisponível para este médico.' });
     }
-}
+
+    const protocolo = `${new Date().getFullYear()}${Math.floor(Math.random() * 10000)}`;
+
+    const novaConsulta = await Consulta.create({
+      protocolo,
+      pacienteId,
+      medicoId,
+      data_consulta,
+      hora_consulta,
+      tipo,
+      motivo,
+      status: 'agendada'
+    });
+    res.status(201).json(novaConsulta);
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao agendar consulta.', detalhe: error.message });
+  }
+};
 
 //PATCH /consultas/:id/status (Atualizar o status)
 exports.atualizarStatus = async (req, res) => {
@@ -96,19 +107,19 @@ exports.atualizarStatus = async (req, res) => {
 
 //PATCH /consultas/:id/cancelar
 exports.cancelar = async (req, res) => {
-    try{
-        const { motivo_cancelamento } = req.body;
-        const consulta = await Consulta.findByPk(req.params.id);
+  try {
+    const { motivo_cancelamento } = req.body;
+    const consulta = await Consulta.findByPk(req.params.id);
 
-        if(!consulta) return res.status(404).json({erro: 'Consulta não encontrada.'});
+    if (!consulta) return res.status(404).json({ erro: 'Consulta não encontrada.' });
 
-        await consulta_update({
-            status: 'cancelada',
-            motivo_cancelamento,
-            data_cancelamento: new Date()
-        });
-        res.json({mensagem: 'Consulta cancelada com sucesso.'})
-    } catch (error) {
-        res.status(500).json({erro: 'Erro ao cancelar consulta.'})
-    }
-}
+    await consulta.update({
+      status: 'cancelada',
+      motivo_cancelamento,
+      data_cancelamento: new Date()
+    });
+    res.json({ mensagem: 'Consulta cancelada com sucesso.' });
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao cancelar consulta.', detalhe: error.message });
+  }
+};
