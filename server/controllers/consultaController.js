@@ -75,15 +75,16 @@ exports.criar = async (req, res) => {
     const protocolo = `${new Date().getFullYear()}${Math.floor(Math.random() * 10000)}`;
 
     const novaConsulta = await Consulta.create({
-      protocolo,
-      pacienteId,
-      medicoId,
-      data_consulta,
-      hora_consulta,
-      tipo,
-      motivo,
-      status: 'agendada'
-    });
+  protocolo,
+  pacienteId,
+  medicoId,
+  data_consulta,
+  hora_consulta,
+  tipo,
+  motivo,
+  status: 'agendada',
+  agendadoPor: req.user.id   // ✅ quem agendou
+})
     res.status(201).json(novaConsulta);
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao agendar consulta.', detalhe: error.message });

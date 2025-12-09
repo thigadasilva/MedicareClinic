@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize')
 const sequelize = require('../config/database')
+const Profissional = require('./profissionalModel')
 
 const Consulta = sequelize.define('Consulta', {
   protocolo: {
@@ -22,7 +23,7 @@ const Consulta = sequelize.define('Consulta', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Profissionais',
+      model: Profissional,
       key: 'id',
     },
   },
@@ -73,7 +74,7 @@ const Consulta = sequelize.define('Consulta', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Profissionais',
+      model: Profissional,
       key: 'id',
     },
   },

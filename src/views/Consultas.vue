@@ -9,10 +9,14 @@
 
     <main class="main">
   <div class="header">
-    <h1>Consultas</h1>
-    <button class="novo" @click="abrirModal">+ Nova Consulta</button>
+    <h2 class="title">Consultas</h2>
+    <button class="novo" @click="abrirModal">
+          <img src="../assets/plus.png" />Nova Consulta
+        </button>
+    
   </div>
-  <span class="subtitle">Atendimentos e registros médicos</span>
+    <span class="subtitle">Atendimentos e registros médicos</span>
+ 
 
   <div class="search-box">
     <input v-model="busca" type="text" placeholder="Buscar paciente..." />
@@ -39,21 +43,6 @@
           {{ formatarStatus(consulta.status) }}
         </span>
       </div>
-    </div>
-
-    <!-- REGISTRO -->
-    <div class="registro" v-if="consultaSelecionada">
-      <h3>Registro de Atendimento</h3>
-      <div class="registro-card">
-        <h4>{{ consultaSelecionada.paciente }}</h4>
-        <span>{{ consultaSelecionada.tipo }}</span>
-        <span>{{ consultaSelecionada.hora }}</span>
-      </div>
-      <label>Observações</label>
-      <textarea v-model="consultaSelecionada.observacoes"></textarea>
-    </div>
-    <div class="registro vazio" v-else>
-      <h3>Selecione uma consulta</h3>
     </div>
   </section>
 
@@ -89,8 +78,8 @@
         <textarea v-model="novaConsulta.motivo"></textarea>
 
         <div class="botoes-modal">
-          <button type="button" @click="fecharModal">Cancelar</button>
-          <button type="submit">Agendar</button>
+          <button type="button" class="cancelar" @click="fecharModal">Cancelar</button>
+          <button type="submit" class="cadastrar">Agendar</button>
         </div>
       </form>
     </div>
@@ -101,7 +90,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
+import api from '@/services/api.js' 
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import BarraLateral from '@/components/barraLateral.vue'
@@ -111,101 +101,93 @@ const router = useRouter()
 
 const busca = ref('')
 const consultaSelecionada = ref(null)
+const consultas = ref([])
+const mostrarModal = ref(false)
 
-// ✅ MOCK DE CONSULTAS (enquanto não liga no backend)
-const consultas = ref([
-  { id: 1, paciente: 'Maria Silva', tipo: 'Consulta de Rotina', hora: '09:00', status: 'finalizada', observacoes: '' },
-  { id: 2, paciente: 'Carlos Santos', tipo: 'Retorno', hora: '10:00', status: 'andamento', observacoes: '' },
-  { id: 3, paciente: 'Ana Oliveira', tipo: 'Primeira Consulta', hora: '11:00', status: 'aguardando', observacoes: '' },
-  { id: 4, paciente: 'José Lima', tipo: 'Exames', hora: '14:30', status: 'aguardando', observacoes: '' },
-  { id: 5, paciente: 'Paula Costa', tipo: 'Consulta de Rotina', hora: '16:00', status: 'cancelada', observacoes: '' }
-])
-
-// ✅ FILTRO DE BUSCA
-const consultasFiltradas = computed(() => {
-  return consultas.value.filter(c =>
-    c.paciente.toLowerCase().includes(busca.value.toLowerCase())
-  )
+const novaConsulta = reactive({
+  pacienteId: '',
+  medicoId: '',
+  data_consulta: '',
+  hora_consulta: '',
+  tipo: '',
+  motivo: ''
 })
 
-// ✅ SELEÇÃO
-const selecionarConsulta = (consulta) => {
-  consultaSelecionada.value = consulta
+const pacientes = ref([])
+const medicos = ref([])
+
+const carregarPacientes = async () => {
+  const res = await api.get('/pacientes')
+  pacientes.value = res.data
 }
+const carregarMedicos = async () => {
+  const res = await api.get('/profissionais/medicos')
+  medicos.value = res.data
+}
+
+const carregarConsultas = async () => {
+  const res = await api.get('/consultas')
+  consultas.value = res.data.map(c => ({
+    id: c.id,
+    paciente: c.paciente.nome,
+    tipo: c.tipo,
+    hora: c.hora_consulta,
+    status: c.status,
+    observacoes: c.motivo || ''
+  }))
+}
+
+
+const consultasFiltradas = computed(() =>
+  consultas.value.filter(c => c.paciente.toLowerCase().includes(busca.value.toLowerCase()))
+)
+
+const abrirModal = () => { mostrarModal.value = true }
+const fecharModal = () => { mostrarModal.value = false }
+
+// ✅ SELEÇÃO
+const selecionarConsulta = (consulta) => { consultaSelecionada.value = consulta }
 
 // ✅ INICIAR CONSULTA
-const iniciarConsulta = async (consulta) => {
-  const token = store.state.auth.token
-
-  await axios.patch(
-    `http://localhost:3000/api/consultas/${consulta.id}/status`,    
-    { status: 'andamento' },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-  )
-
-  consulta.status = 'andamento'
+const cadastrarConsulta = async () => {
+  try {
+    await api.post('/consultas', {
+      pacienteId: novaConsulta.pacienteId,
+      medicoId: novaConsulta.medicoId,
+      data_consulta: novaConsulta.data_consulta,
+      hora_consulta: novaConsulta.hora_consulta,
+      tipo: novaConsulta.tipo,
+      motivo: novaConsulta.motivo
+    })
+    alert('Consulta agendada com sucesso!')
+    fecharModal()
+    carregarConsultas()
+  } catch (erro) {
+    console.error(erro.response?.data || erro)
+    alert('Erro ao agendar consulta')
+  }
 }
 
-
-const finalizarConsulta = async () => {
-  const token = store.state.auth.token
-
-  await axios.patch(
-    `http://localhost:3000/api/consultas/${consultaSelecionada.value.id}/status`,
-    { status: 'finalizada' },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-  )
-
-  consultaSelecionada.value.status = 'finalizada'
-  alert('Consulta finalizada!')
-}
-
+onMounted(() => {
+  carregarConsultas()
+  carregarPacientes()
+  carregarMedicos()
+})
 
 // ✅ FORMATA STATUS
 const formatarStatus = (status) => {
-  if (status === 'finalizada') return 'Finalizada'
-  if (status === 'andamento') return 'Em Atendimento'
-  if (status === 'aguardando') return 'Aguardando'
-  return 'Cancelada'
+  if (status === 'agendada') return 'Agendada'
+  if (status === 'confirmada') return 'Confirmada'
+  if (status === 'em_atendimento') return 'Em Atendimento'
+  if (status === 'realizada') return 'Finalizada'
+  if (status === 'cancelada') return 'Cancelada'
+  if (status === 'faltou') return 'Faltou'
+  return status   // fallback: mostra o valor cru
 }
 
 // ✅ NAVEGAÇÃO
 const handleNavigate = (routeName) => {
   router.push(`/${routeName}`)
-}
-const carregarConsultas = async () => {
-  try {
-    const token = store.state.auth.token
-
-    const response = await axios.get(
-      'http://localhost:3000/api/consultas',
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    )
-
-    consultas.value = response.data.map(c => ({
-      id: c.id,
-      paciente: c.paciente.nome,
-      tipo: c.tipo,
-      hora: c.hora_consulta,
-      status: c.status,
-      observacoes: c.motivo || ''
-    }))
-
-  } catch (erro) {
-    console.error('Erro ao buscar consultas:', erro.response?.data)
-  }
 }
 
 const handleLogout = () => {
@@ -282,6 +264,19 @@ body {
 .username {
     font-weight: bold;
 }
+
+.header {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;          
+      
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 600;
+}
+
 
 .role {
     font-size: 12px;
@@ -400,12 +395,40 @@ body {
     font-size: 12px;
     padding: 4px 8px;
     border-radius: 8px;
+    font-weight: 600;
 }
 
-.finalizada { color: #2ecc71; background: #d9f7e8; }
-.andamento { color: #0a73ff; background: #dbe9ff; }
-.aguardando { color: #e7a400; background: #fff2cd; }
-.cancelada { color: #e74c3c; background: #ffe3df; }
+/* Status possíveis */
+.agendada { 
+    color: #1a73e8; 
+    background: #e9f0ff; 
+}
+
+.confirmada { 
+    color: #0a9955; 
+    background: #d9f7e8; 
+}
+
+.em_atendimento { 
+    color: #ff9800; 
+    background: #fff2cd; 
+}
+
+.realizada { 
+    color: #2ecc71; 
+    background: #d9f7e8; 
+}
+
+.cancelada { 
+    color: #e74c3c; 
+    background: #ffe3df; 
+}
+
+.faltou { 
+    color: #e63946; 
+    background: #f3e5f5; 
+}
+
 
 .btn {
     background: #0a73ff;
@@ -451,5 +474,78 @@ textarea {
     cursor: pointer;
 }
 
+.novo{
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    width: auto;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-left: auto;
+    display: flex;          
+  align-items: center;     
+  gap: 6px; 
+}
+
+.novo img{
+    width: 16px;
+    height: 16px;
+}
+
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  width: 400px;
+}
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal input,
+.modal select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.botoes-modal {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.cancelar {
+  background: #e5e7eb;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+}
+
+.cadastrar {
+  background: #1a73e8;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+}
 
 </style>
