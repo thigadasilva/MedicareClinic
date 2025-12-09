@@ -1,119 +1,219 @@
 <template>
-   <div class="container">
+  <div class="container">
+    <BarraLateral
+      :username="store.state.auth.user?.nome"
+      :userRole="store.state.auth.user?.perfil"
+      @navigate="handleNavigate"
+      @logout="handleLogout"
+    />
 
-   <BarraLateral
-  :username="store.state.auth.user?.nome"
-  :userRole="store.state.auth.user?.perfil"
-  @navigate="handleNavigate"
-  @logout="handleLogout"
-   />
-    <!-- Conteúdo principal -->
     <main class="main">
-        <h1>Consultas</h1>
-        <span class="subtitle">Atendimentos e registros médicos</span>
+  <div class="header">
+    <h1>Consultas</h1>
+    <button class="novo" @click="abrirModal">+ Nova Consulta</button>
+  </div>
+  <span class="subtitle">Atendimentos e registros médicos</span>
 
-        <div class="search-box">
-            <input type="text" placeholder="Buscar paciente..." />
+  <div class="search-box">
+    <input v-model="busca" type="text" placeholder="Buscar paciente..." />
+  </div>
+
+  <section class="consultas-container">
+    <!-- LISTA -->
+    <div class="consultas-list">
+      <h3 class="section-title">Consultas de Hoje</h3>
+      <div
+        v-for="consulta in consultasFiltradas"
+        :key="consulta.id"
+        class="consulta"
+        :class="{ selected: consultaSelecionada?.id === consulta.id }"
+        @click="selecionarConsulta(consulta)"
+      >
+        <div class="icon user"></div>
+        <div class="info">
+          <h4>{{ consulta.paciente }}</h4>
+          <span>{{ consulta.tipo }}</span>
         </div>
+        <div class="time">{{ consulta.hora }}</div>
+        <span class="status" :class="consulta.status">
+          {{ formatarStatus(consulta.status) }}
+        </span>
+      </div>
+    </div>
 
-        <section class="consultas-container">
+    <!-- REGISTRO -->
+    <div class="registro" v-if="consultaSelecionada">
+      <h3>Registro de Atendimento</h3>
+      <div class="registro-card">
+        <h4>{{ consultaSelecionada.paciente }}</h4>
+        <span>{{ consultaSelecionada.tipo }}</span>
+        <span>{{ consultaSelecionada.hora }}</span>
+      </div>
+      <label>Observações</label>
+      <textarea v-model="consultaSelecionada.observacoes"></textarea>
+    </div>
+    <div class="registro vazio" v-else>
+      <h3>Selecione uma consulta</h3>
+    </div>
+  </section>
 
-            <!-- Lista -->
-            <div class="consultas-list">
-                <h3 class="section-title">Consultas de Hoje</h3>
+  <!-- ✅ MODAL DE NOVA CONSULTA -->
+  <div v-if="mostrarModal" class="modal-overlay">
+    <div class="modal">
+      <h3>Agendar Nova Consulta</h3>
+      <form @submit.prevent="cadastrarConsulta">
+        <label>Paciente</label>
+        <select v-model="novaConsulta.pacienteId" required>
+          <option v-for="p in pacientes" :key="p.id" :value="p.id">{{ p.nome }}</option>
+        </select>
 
-                <div class="consulta selected">
-                    <div class="icon user"></div>
-                    <div class="info">
-                        <h4>Maria Silva</h4>
-                        <span>Consulta de Rotina</span>
-                    </div>
-                    <div class="time">09:00</div>
-                    <span class="status finalizada">Finalizada</span>
-                </div>
+        <label>Médico</label>
+        <select v-model="novaConsulta.medicoId" required>
+          <option v-for="m in medicos" :key="m.id" :value="m.id">{{ m.nome }} - {{ m.especialidade }}</option>
+        </select>
 
-                <div class="consulta">
-                    <div class="icon user"></div>
-                    <div class="info">
-                        <h4>Carlos Santos</h4>
-                        <span>Retorno</span>
-                    </div>
-                    <div class="time">10:00</div>
-                    <span class="status andamento">Em Atendimento</span>
-                </div>
+        <label>Data</label>
+        <input type="date" v-model="novaConsulta.data_consulta" required />
 
-                <div class="consulta">
-                    <div class="icon user"></div>
-                    <div class="info">
-                        <h4>Ana Oliveira</h4>
-                        <span>Primeira Consulta</span>
-                    </div>
-                    <div class="time">11:00</div>
-                    <span class="status aguardando">Aguardando</span>
-                    <button class="btn">Iniciar</button>
-                </div>
+        <label>Hora</label>
+        <input type="time" v-model="novaConsulta.hora_consulta" required />
 
-                <div class="consulta">
-                    <div class="icon user"></div>
-                    <div class="info">
-                        <h4>José Lima</h4>
-                        <span>Exames</span>
-                    </div>
-                    <div class="time">14:30</div>
-                    <span class="status aguardando">Aguardando</span>
-                    <button class="btn">Iniciar</button>
-                </div>
+        <label>Tipo</label>
+        <select v-model="novaConsulta.tipo" required>
+          <option value="primeira_consulta">Primeira Consulta</option>
+          <option value="retorno">Retorno</option>
+          <option value="emergencia">Emergência</option>
+        </select>
 
-                <div class="consulta">
-                    <div class="icon user"></div>
-                    <div class="info">
-                        <h4>Paula Costa</h4>
-                        <span>Consulta de Rotina</span>
-                    </div>
-                    <div class="time">16:00</div>
-                    <span class="status cancelada">Cancelada</span>
-                </div>
-            </div>
+        <label>Motivo</label>
+        <textarea v-model="novaConsulta.motivo"></textarea>
 
-            <!-- Registro de Atendimento -->
-            <div class="registro">
-                <h3>Registro de Atendimento</h3>
+        <div class="botoes-modal">
+          <button type="button" @click="fecharModal">Cancelar</button>
+          <button type="submit">Agendar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
 
-                <div class="registro-card">
-                    <h4>Maria Silva</h4>
-                    <span>Consulta de Rotina</span>
-                    <span>09:00</span>
-                </div>
-
-                <label>Observações do Atendimento</label>
-                <textarea placeholder="Paciente em bom estado geral. Pressão: 120/80"></textarea>
-
-                <button class="btn-success">Atendimento finalizado</button>
-            </div>
-       </section>
-   </main>
-   </div>
+  </div>
 </template>
+
 <script setup>
+import { ref, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import BarraLateral from '@/components/barraLateral.vue';
+import BarraLateral from '@/components/barraLateral.vue'
+
+const store = useStore()
+const router = useRouter()
+
+const busca = ref('')
+const consultaSelecionada = ref(null)
+
+// ✅ MOCK DE CONSULTAS (enquanto não liga no backend)
+const consultas = ref([
+  { id: 1, paciente: 'Maria Silva', tipo: 'Consulta de Rotina', hora: '09:00', status: 'finalizada', observacoes: '' },
+  { id: 2, paciente: 'Carlos Santos', tipo: 'Retorno', hora: '10:00', status: 'andamento', observacoes: '' },
+  { id: 3, paciente: 'Ana Oliveira', tipo: 'Primeira Consulta', hora: '11:00', status: 'aguardando', observacoes: '' },
+  { id: 4, paciente: 'José Lima', tipo: 'Exames', hora: '14:30', status: 'aguardando', observacoes: '' },
+  { id: 5, paciente: 'Paula Costa', tipo: 'Consulta de Rotina', hora: '16:00', status: 'cancelada', observacoes: '' }
+])
+
+// ✅ FILTRO DE BUSCA
+const consultasFiltradas = computed(() => {
+  return consultas.value.filter(c =>
+    c.paciente.toLowerCase().includes(busca.value.toLowerCase())
+  )
+})
+
+// ✅ SELEÇÃO
+const selecionarConsulta = (consulta) => {
+  consultaSelecionada.value = consulta
+}
+
+// ✅ INICIAR CONSULTA
+const iniciarConsulta = async (consulta) => {
+  const token = store.state.auth.token
+
+  await axios.patch(
+    `http://localhost:3000/api/consultas/${consulta.id}/status`,    
+    { status: 'andamento' },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  )
+
+  consulta.status = 'andamento'
+}
 
 
-    const store = useStore()
-    const router = useRouter()
+const finalizarConsulta = async () => {
+  const token = store.state.auth.token
 
+  await axios.patch(
+    `http://localhost:3000/api/consultas/${consultaSelecionada.value.id}/status`,
+    { status: 'finalizada' },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  )
+
+  consultaSelecionada.value.status = 'finalizada'
+  alert('Consulta finalizada!')
+}
+
+
+// ✅ FORMATA STATUS
+const formatarStatus = (status) => {
+  if (status === 'finalizada') return 'Finalizada'
+  if (status === 'andamento') return 'Em Atendimento'
+  if (status === 'aguardando') return 'Aguardando'
+  return 'Cancelada'
+}
+
+// ✅ NAVEGAÇÃO
 const handleNavigate = (routeName) => {
   router.push(`/${routeName}`)
 }
+const carregarConsultas = async () => {
+  try {
+    const token = store.state.auth.token
 
-    const handleLogout = () => {
-      store.dispatch('auth/logout')
-      router.push('/login') // redireciona para tela de login
-    }
+    const response = await axios.get(
+      'http://localhost:3000/api/consultas',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
 
+    consultas.value = response.data.map(c => ({
+      id: c.id,
+      paciente: c.paciente.nome,
+      tipo: c.tipo,
+      hora: c.hora_consulta,
+      status: c.status,
+      observacoes: c.motivo || ''
+    }))
 
+  } catch (erro) {
+    console.error('Erro ao buscar consultas:', erro.response?.data)
+  }
+}
+
+const handleLogout = () => {
+  store.dispatch('auth/logout')
+  router.push('/login')
+}
 </script>
+
 <style scoped>
 
 * {

@@ -48,28 +48,17 @@ exports.listarMedicos = async (req, res) => {
 }
 
 // POST /profissionais
+// POST /profissionais
 exports.criar = async (req, res) => {
   try {
-    const { nome, email, senha, crm, especialidade, perfil } = req.body
-
-    const senhaCriptografada = await bcrypt.hash(senha, 10)
-
-    const novo = await Profissional.create({
-      nome,
-      email,
-      senha: senhaCriptografada,
-      crm,
-      especialidade,
-      perfil,
-      status: true
-    })
-
-    novo.senha = undefined
+    const novo = await Profissional.create(req.body)
     res.status(201).json(novo)
   } catch (error) {
-    res.status(500).json({ erro: 'Erro ao criar profissional', detalhe: error.message })
+    console.error('Erro ao criar profissional:', error)
+    res.status(500).json({ erro: 'Erro ao criar profissional.' })
   }
 }
+
 
 // PUT /profissionais/:id
 exports.atualizar = async (req, res) => {

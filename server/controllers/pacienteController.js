@@ -27,34 +27,16 @@ exports.buscarHistorico = async (req, res) => {
 
 // POST /pacientes
 exports.criar = async (req, res) => {
-  const {
-    nome,
-    cpf,
-    data_nascimento,
-    telefone,
-    email,
-    endereco,
-    cidade,
-    estado,
-    cep,
-    convenio,
-    numero_convenio,
-  } = req.body
-  const novo = await Paciente.create({
-    nome,
-    cpf,
-    data_nascimento,
-    telefone,
-    email,
-    endereco,
-    cidade,
-    estado,
-    cep,
-    convenio,
-    numero_convenio,
-  })
-  res.status(201).json(novo)
+  try {
+    console.log('Payload recebido:', req.body)
+    const novo = await Paciente.create(req.body) // usa direto o body
+    res.status(201).json(novo)
+  } catch (error) {
+    console.error('Erro ao criar paciente:', error)
+    res.status(500).json({ erro: 'Erro ao criar paciente.' })
+  }
 }
+
 // PUT /pacientes/:id
 exports.atualizar = async (req, res) => {
   const paciente = await Paciente.findByPk(req.params.id)

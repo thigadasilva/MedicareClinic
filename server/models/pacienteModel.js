@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize')
 const sequelize = require('../config/database')
+const Profissional = require('./profissionalModel')
 
 const Paciente = sequelize.define('Paciente', {
   nome: {
@@ -12,7 +13,7 @@ const Paciente = sequelize.define('Paciente', {
     unique: true,
   },
   data_nascimento: {
-    type: DataTypes.DATEONLY,
+    type: DataTypes.STRING,
     allowNull: false,
   },
   telefone: {
@@ -58,7 +59,7 @@ const Paciente = sequelize.define('Paciente', {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: 'Profissional',
+      model: Profissional,
       key: 'id',
     },
   },
@@ -66,7 +67,7 @@ const Paciente = sequelize.define('Paciente', {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: 'Profissional',
+      model: Profissional,
     },
   },
     createdAt: {

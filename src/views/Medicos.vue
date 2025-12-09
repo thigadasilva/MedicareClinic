@@ -1,62 +1,163 @@
 <template>
-    <div class="container">
-         <BarraLateral
-  :username="store.state.auth.user?.nome"
-  :userRole="store.state.auth.user?.perfil"
-  @navigate="handleNavigate"
-  @logout="handleLogout"
-   />
+  <div class="container">
+    <BarraLateral
+      :username="store.state.auth.user?.nome"
+      :userRole="store.state.auth.user?.perfil"
+      @navigate="handleNavigate"
+      @logout="handleLogout"
+    />
 
-   <main>
-       <div class="header">
-           <h2 class="title">Médicos</h2>
-            
-            <button class="novo"><img src="../assets/plus.png">Novo Médico</button>
-       </div>
-       <p class="subtitle">Visão geral dos médicos do hospital</p>
+    <main>
+      <div class="header">
+        <h2 class="title">Médicos</h2>
 
-<div class="search-box">
-            <input type="text" placeholder="Buscar paciente..." />
-        </div>
+        <button class="novo" @click="abrirModal">
+          <img src="../assets/plus.png" />Novo Médico
+        </button>
+      </div>
 
-        <div class="cards">
-            <Card
-              title="Dra. Ana Santos"
-              subtitle="Cardiologista"
-              description="CRM: 12345"
-            />
-             <Card
-              title="Dra. Carlos Souza"
-              subtitle="Cardiologista"
-              description="CRM: 12345"
-            />
-             <Card
-              title="Dra. Ana Santos"
-              subtitle="Cardiologista"
-              description="CRM: 12345"
-            />
-        </div>
-   </main>
+      <p class="subtitle">Visão geral dos médicos do hospital</p>
+
+      <div class="search-box">
+        <input type="text" placeholder="Buscar médico..." />
+      </div>
+
+      <div class="cards">
+        <Card
+          v-for="medico in medicos"
+          :key="medico.id"
+          :title="medico.nome"
+          :subtitle="medico.especialidade"
+          :description="`CRM: ${medico.crm}`"
+        />
+      </div>
+    </main>
+
+    <!-- ✅ MODAL DE CADASTRO -->
+    <div v-if="mostrarModal" class="modal-overlay">
+      <div class="modal">
+
+        <h3>Novo Médico</h3>
+
+        <form @submit.prevent="cadastrar">
+
+          <label>Nome Completo *</label>
+          <input v-model="novoMedico.nome" placeholder="Dr(a). Nome" required />
+
+          <label>CRM *</label>
+          <input v-model="novoMedico.crm" placeholder="000000-UF" required />
+
+          <label>Especialidade *</label>
+          <select v-model="novoMedico.especialidade" required>
+            <option disabled value="">Selecione uma especialidade</option>
+            <option>Cardiologia</option>
+            <option>Clínico Geral</option>
+            <option>Ortopedia</option>
+            <option>Pediatria</option>
+          </select>
+
+          <label>E-mail</label>
+          <input v-model="novoMedico.email" placeholder="email@exemplo.com" />
+
+          <label>Telefone</label>
+          <input v-model="novoMedico.telefone" placeholder="(00) 00000-0000" />
+
+          <!-- senha obrigatória no backend -->
+          <input type="hidden" v-model="novoMedico.senha" />
+
+          <div class="botoes-modal">
+            <button type="button" class="cancelar" @click="fecharModal">Cancelar</button>
+            <button type="submit" class="cadastrar">Cadastrar</button>
+          </div>
+
+        </form>
+      </div>
     </div>
+
+  </div>
 </template>
 <script setup>
+import { ref, reactive, onMounted } from 'vue'
+import api from '@/services/api.js'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import BarraLateral from '@/components/barraLateral.vue';
-import Card from '@/components/Card.vue';
+import BarraLateral from '@/components/barraLateral.vue'
+import Card from '@/components/Card.vue'
 
 const store = useStore()
 const router = useRouter()
 
+const medicos = ref([])
+const mostrarModal = ref(false)
+
+const novoMedico = reactive({
+  nome: '',
+  crm: '',
+  especialidade: '',
+  email: '',
+  telefone: '',
+  senha: 'Med@123',
+  perfil: 'medico' // obrigatório no backend
+})
+
+// ✅ BUSCAR MÉDICOS
+const carregarMedicos = async () => {
+  try {
+    const response = await api.get('/profissionais/medicos')
+    medicos.value = response.data
+  } catch (erro) {
+    console.error('Erro ao buscar medicos:', erro.response?.data || erro)
+  }
+}
+
+
+onMounted(() => {
+  carregarMedicos()
+})
+
+// ✅ ABRIR / FECHAR MODAL
+const abrirModal = () => {
+  mostrarModal.value = true
+}
+
+const fecharModal = () => {
+  mostrarModal.value = false
+}
+
+// ✅ CADASTRAR MÉDICO
+const cadastrar = async () => {
+  try {
+     await api.post('/profissionais', novoMedico)
+  
+
+    alert('Médico cadastrado com sucesso!')
+
+    fecharModal()
+    carregarMedicos()
+
+    // limpa o formulário
+    novoMedico.nome = ''
+    novoMedico.crm = ''
+    novoMedico.especialidade = ''
+    novoMedico.email = ''
+    novoMedico.telefone = ''
+
+  } catch (erro) {
+    console.error(erro)
+    alert('Erro ao cadastrar médico')
+  }
+}
+
 const handleNavigate = (routeName) => {
   router.push(`/${routeName}`)
 }
-const handleLogout = () => {
-      store.dispatch('auth/logout')
-      router.push('/login') // redireciona para tela de login
-}
 
+const handleLogout = () => {
+  store.dispatch('auth/logout')
+  router.push('/login')
+}
 </script>
+
 <style scoped>
 
 * {
@@ -300,5 +401,61 @@ main {
 .confirmada { background: #d1fae5; color: #065f46; }
 .pendente { background: #fef9c3; color: #92400e; }
 .cancelada { background: #fee2e2; color: #991b1b; }
+
+/* ===== MODAL ===== */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  width: 400px;
+}
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal input,
+.modal select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.botoes-modal {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.cancelar {
+  background: #e5e7eb;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+}
+
+.cadastrar {
+  background: #1a73e8;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+}
+
 
 </style>

@@ -8,7 +8,7 @@ const Profissional = sequelize.define('Profissional', {
   },
   email: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
     unique: true,
     validate: {
       isEmail: true
@@ -16,12 +16,12 @@ const Profissional = sequelize.define('Profissional', {
   },
   crm: {
     type: DataTypes.STRING,
-    allowNull: true,
+    allowNull: false,
     unique: true
   },
   especialidade: {
     type: DataTypes.STRING,
-    allowNull: true
+    allowNull: false
   },
   perfil: {
     type: DataTypes.ENUM('admin', 'medico', 'recepcionista'),
