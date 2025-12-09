@@ -3,11 +3,18 @@
 
     <div class="left-panel">
       <div class="left-content">
-        <h1>MedicareClinic</h1>
+        <img src="@/assets/LogoMediCare.png" class="logo-image" alt="logo" />
+
+        <div class="title-group">
+          <h1>MediCare</h1>
+          <h2>Clinic</h2>
+        </div>
       </div>
 
+
       <div class="left-bottom-content">
-         <img src="@/assets/login-image.png" class="left-image" alt="ilustração" />
+        
+        <img src="@/assets/login-image.png" class="left-image" alt="med" />
       </div>
     </div>
 
@@ -118,7 +125,7 @@ html, body {
 <style scoped>
 
 :global(html, body, #app) {
-  font-family: "Poppins", sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 .login-wrapper {
@@ -142,12 +149,37 @@ html, body {
 
 
 .left-content {
-  max-width: 350px;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem; 
+  animation-delay: 0.2s;
 }
 
-.left-panel h1 {
+.title-group {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+}
+
+.left-content h1 {
   font-size: 2.6rem;
-  margin-bottom: 1rem;
+  margin: 0;
+  animation-delay: 0.4s;
+}
+
+.left-content h2 {
+  font-size: 1.8rem;
+  margin: 0;
+  margin-top: -5px;
+  font-weight: 400;
+  animation-delay: 0.6s;
+}
+
+.left-content > * {
+  opacity: 0;
+  animation: fadeIn 0.9s ease forwards;
 }
 
 .left-panel p {
@@ -156,22 +188,22 @@ html, body {
   margin-bottom: 2rem;
 }
 
-.left-bottom-content {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  padding-bottom: 2rem;
+.logo-image{
+  width: 60px;        
+  height: auto;
+  object-fit: contain;
+  animation-delay: 0.2s;
 }
 
 .left-image {
   width: 70%;            
   max-width: 1000px;     
-  min-width: 180px;
-  padding-left: 30%; ;     
-  height: 110%;
+  min-width: 180px;     
+  height: 100%;
+  padding-left: 15%;
   object-fit: contain;
   display: block;
+  filter: drop-shadow(0px 8px 20px rgba(0, 0, 0, 0.25));
 }
 
 
