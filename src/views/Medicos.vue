@@ -19,55 +19,74 @@
       <p class="subtitle">Visão geral dos médicos do hospital</p>
 
       <div class="search-box">
-        <input type="text" placeholder="Buscar médico..." />
+        <input v-model="busca" type="text" placeholder="Buscar médico..." />
       </div>
 
       <div class="cards">
         <Card
-          v-for="medico in medicos"
+          v-for="medico in medicosFiltrados"
           :key="medico.id"
           :title="medico.nome"
           :subtitle="medico.especialidade"
           :description="`CRM: ${medico.crm}`"
-        />
+          :actions="[
+             { label: 'Editar', onClick: () => abrirModalEditar(medico), class: 'editar' },
+             { label: 'Excluir', onClick: () => excluirMedico(medico.id), class: 'excluir' },
+             { label: 'Detalhes', onClick: () => abrirModalDetalhes(medico), class: 'detalhes' }
+          ]"  
+        > 
+        </Card>
       </div>
+      <div v-if="medicoDetalhes" class="modal-overlay">
+  <div class="modal">
+    <h3>Detalhes do Médico</h3>
+    <p><strong>Nome:</strong> {{ medicoDetalhes.nome }}</p>
+    <p><strong>CRM:</strong> {{ medicoDetalhes.crm }}</p>
+    <p><strong>Especialidade:</strong> {{ medicoDetalhes.especialidade }}</p>
+    <p><strong>Email:</strong> {{ medicoDetalhes.email }}</p>
+    <p><strong>Telefone:</strong> Não aplicável</p>
+    <p><strong>Status:</strong> {{ medicoDetalhes.status ? 'Ativo' : 'Inativo' }}</p>
+
+    <div class="botoes-modal">
+      <button type="button" class="cancelar" @click="fecharModalDetalhes">Fechar</button>
+    </div>
+  </div>
+</div>
     </main>
 
-    <!-- ✅ MODAL DE CADASTRO -->
+    <!-- ✅ MODAL DE CADASTRO/EDIÇÃO -->
     <div v-if="mostrarModal" class="modal-overlay">
       <div class="modal">
 
-        <h3>Novo Médico</h3>
+        <h3>{{ medicoEditando ? 'Editar Médico' : 'Novo Médico' }}</h3>
 
-        <form @submit.prevent="cadastrar">
+        <form @submit.prevent="medicoEditando ? atualizarMedico() : cadastrar()">
 
-          <label>Nome Completo *</label>
-          <input v-model="novoMedico.nome" placeholder="Dr(a). Nome" required />
+         <label>Nome Completo *</label>
+         <input v-model="formMedico.nome" required />
 
-          <label>CRM *</label>
-          <input v-model="novoMedico.crm" placeholder="000000-UF" required />
+         <label>CRM *</label>
+         <input v-model="formMedico.crm" required />
 
-          <label>Especialidade *</label>
-          <select v-model="novoMedico.especialidade" required>
-            <option disabled value="">Selecione uma especialidade</option>
-            <option>Cardiologia</option>
-            <option>Clínico Geral</option>
-            <option>Ortopedia</option>
-            <option>Pediatria</option>
-          </select>
+         <label>Especialidade *</label>
+        <select v-model="formMedico.especialidade" required>
+          <option>Cardiologia</option>
+          <option>Clínico Geral</option>
+          <option>Ortopedia</option>
+          <option>Pediatria</option>
+        </select>
 
-          <label>E-mail</label>
-          <input v-model="novoMedico.email" placeholder="email@exemplo.com" />
+        <label>E-mail</label>
+        <input v-model="formMedico.email" />
 
-          <label>Telefone</label>
-          <input v-model="novoMedico.telefone" placeholder="(00) 00000-0000" />
-
-          <!-- senha obrigatória no backend -->
-          <input type="hidden" v-model="novoMedico.senha" />
+        <label>Telefone</label>
+        <input v-model="formMedico.telefone" />
 
           <div class="botoes-modal">
             <button type="button" class="cancelar" @click="fecharModal">Cancelar</button>
-            <button type="submit" class="cadastrar">Cadastrar</button>
+            <button type="submit" class="cadastrar">
+              {{ medicoEditando ? 'Salvar Alterações' : 'Cadastrar' }}
+            </button>
           </div>
 
         </form>
@@ -77,7 +96,7 @@
   </div>
 </template>
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import api from '@/services/api.js'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
@@ -89,6 +108,7 @@ const router = useRouter()
 
 const medicos = ref([])
 const mostrarModal = ref(false)
+const medicoEditando = ref(null)
 
 const novoMedico = reactive({
   nome: '',
@@ -97,61 +117,111 @@ const novoMedico = reactive({
   email: '',
   telefone: '',
   senha: 'Med@123',
-  perfil: 'medico' // obrigatório no backend
+  perfil: 'medico'
 })
+
+// no script
+const formMedico = computed(() => medicoEditando.value || novoMedico)
+
 
 // ✅ BUSCAR MÉDICOS
 const carregarMedicos = async () => {
   try {
     const response = await api.get('/profissionais/medicos')
-    medicos.value = response.data
+    medicos.value = response.data.map(m => ({ ...m, mostrarDetalhes: false }))
   } catch (erro) {
     console.error('Erro ao buscar medicos:', erro.response?.data || erro)
   }
 }
 
-
 onMounted(() => {
   carregarMedicos()
 })
 
-// ✅ ABRIR / FECHAR MODAL
-const abrirModal = () => {
-  mostrarModal.value = true
+const medicoDetalhes = ref(null)
+const abrirModalDetalhes = async (medico) => {
+  try {
+    // busca os dados completos do médico pelo ID
+    const response = await api.get(`/profissionais/${medico.id}`)
+     console.log(response.data)
+    medicoDetalhes.value = response.data
+  } catch (erro) {
+    console.error('Erro ao buscar detalhes do médico:', erro.response?.data || erro)
+    alert('Erro ao carregar detalhes do médico')
+  }
+}
+const fecharModalDetalhes = () => {
+  medicoDetalhes.value = null
 }
 
+const busca = ref('')
+
+const medicosFiltrados = computed(() => {
+  if (!busca.value) return medicos.value
+  return medicos.value.filter(m =>
+    m.nome.toLowerCase().includes(busca.value.toLowerCase()) ||
+    m.especialidade.toLowerCase().includes(busca.value.toLowerCase()) ||
+    m.crm.toLowerCase().includes(busca.value.toLowerCase())
+  )
+})
+
+// ✅ ABRIR / FECHAR MODAL
+const abrirModal = () => {
+  medicoEditando.value = null
+  mostrarModal.value = true
+}
+const abrirModalEditar = (medico) => {
+  medicoEditando.value = { ...medico }
+  mostrarModal.value = true
+}
 const fecharModal = () => {
   mostrarModal.value = false
+  medicoEditando.value = null
 }
 
 // ✅ CADASTRAR MÉDICO
 const cadastrar = async () => {
   try {
-     await api.post('/profissionais', novoMedico)
-  
-
+    await api.post('/profissionais', novoMedico)
     alert('Médico cadastrado com sucesso!')
-
     fecharModal()
     carregarMedicos()
-
-    // limpa o formulário
-    novoMedico.nome = ''
-    novoMedico.crm = ''
-    novoMedico.especialidade = ''
-    novoMedico.email = ''
-    novoMedico.telefone = ''
-
+    Object.assign(novoMedico, { nome: '', crm: '', especialidade: '', email: '', telefone: '' })
   } catch (erro) {
     console.error(erro)
     alert('Erro ao cadastrar médico')
   }
 }
 
-const handleNavigate = (routeName) => {
-  router.push(`/${routeName}`)
+// ✅ ATUALIZAR MÉDICO
+const atualizarMedico = async () => {
+  try {
+    await api.patch(`/profissionais/${medicoEditando.value.id}`, medicoEditando.value)
+    alert('Médico atualizado com sucesso!')
+    fecharModal()
+    carregarMedicos()
+  } catch (erro) {
+    console.error(erro)
+    alert('Erro ao atualizar médico')
+  }
 }
 
+// ✅ EXCLUIR MÉDICO
+const excluirMedico = async (id) => {
+  if (!confirm('Tem certeza que deseja excluir este médico?')) return
+  try {
+    await api.delete(`/profissionais/${id}`)
+    alert('Médico excluído com sucesso!')
+    carregarMedicos()
+  } catch (erro) {
+    console.error(erro)
+    alert('Erro ao excluir médico')
+  }
+}
+
+
+// ✅ NAVEGAÇÃO
+const handleNavigate = (routeName) => router.push(`/${routeName}`)
 const handleLogout = () => {
   store.dispatch('auth/logout')
   router.push('/login')
@@ -337,6 +407,18 @@ main {
     color: #10b981;
 }
 
+.card-actions button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  margin-right: 6px;
+}
+.editar { background: #fbbf24; color: #fff; }
+.excluir { background: #ef4444; color: #fff; }
+.detalhes { background: #3b82f6; color: #fff; }
+
+
 /* CONSULTAS -------------------------------- */
 
 .consultas {
@@ -440,6 +522,7 @@ main {
   display: flex;
   justify-content: space-between;
   margin-top: 15px;
+  
 }
 
 .cancelar {
@@ -447,6 +530,7 @@ main {
   padding: 10px 20px;
   border-radius: 8px;
   border: none;
+  cursor: pointer;
 }
 
 .cadastrar {
@@ -455,6 +539,7 @@ main {
   padding: 10px 20px;
   border-radius: 8px;
   border: none;
+    cursor: pointer;
 }
 
 

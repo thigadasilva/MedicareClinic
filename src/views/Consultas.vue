@@ -23,7 +23,6 @@
   </div>
 
   <section class="consultas-container">
-    <!-- LISTA -->
     <div class="consultas-list">
       <h3 class="section-title">Consultas de Hoje</h3>
       <div
@@ -36,7 +35,7 @@
         <div class="icon user"></div>
         <div class="info">
           <h4>{{ consulta.paciente }}</h4>
-          <span>{{ consulta.tipo }}</span>
+          <span>{{formatarTipo(consulta.tipo)}}</span>
         </div>
         <div class="time">{{ consulta.hora }}</div>
         <span class="status" :class="consulta.status">
@@ -44,6 +43,23 @@
         </span>
       </div>
     </div>
+    <div v-if="consultaSelecionada" class="detalhes-consulta">
+  <h3>Detalhes da Consulta</h3>
+  <p><strong>Paciente:</strong> {{ consultaSelecionada.paciente }}</p>
+  <p><strong>Médico:</strong> {{ consultaSelecionada.medico }}</p>
+  <p><strong>Data:</strong> {{ consultaSelecionada.data_consulta }}</p>
+  <p><strong>Hora:</strong> {{ consultaSelecionada.hora }}</p>
+  <p><strong>Tipo:</strong> {{ consultaSelecionada.tipo }}</p>
+  <p><strong>Status:</strong> {{ formatarStatus(consultaSelecionada.status) }}</p>
+  <p><strong>Motivo:</strong> {{ consultaSelecionada.motivo || 'Não informado' }}</p>
+
+  <div class="acoes-consulta">
+    <button @click="atualizarStatus('confirmada')">Confirmar</button>
+    <button @click="atualizarStatus('em_atendimento')">Iniciar Atendimento</button>
+    <button @click="atualizarStatus('realizada')">Finalizar</button>
+    <button @click="atualizarStatus('cancelada')">Cancelar</button>
+  </div>
+</div>
   </section>
 
   <!-- ✅ MODAL DE NOVA CONSULTA -->
@@ -125,16 +141,42 @@ const carregarMedicos = async () => {
   medicos.value = res.data
 }
 
+const formatarTipo = (tipo) => {
+  if (tipo === 'primeira_consulta') return 'Primeira Consulta'
+  if (tipo === 'retorno') return 'Retorno'
+  if (tipo === 'emergencia') return 'Emergência'
+  if (tipo === 'consulta') return 'Consulta'
+  return tipo   // fallback: mostra o valor cru
+}
+
 const carregarConsultas = async () => {
-  const res = await api.get('/consultas')
-  consultas.value = res.data.map(c => ({
-    id: c.id,
-    paciente: c.paciente.nome,
-    tipo: c.tipo,
-    hora: c.hora_consulta,
-    status: c.status,
-    observacoes: c.motivo || ''
-  }))
+  try {
+    const response = await api.get('/consultas')
+    consultas.value = response.data.map(c => ({
+      id: c.id,
+      paciente: c.paciente?.nome || 'Paciente não informado',
+      medico: c.medico?.nome || 'Médico não informado',
+      tipo: c.tipo,
+      hora: c.hora_consulta,
+      status: c.status
+    }))
+  } catch (erro) {
+    console.error('Erro ao buscar consultas:', erro.response?.data || erro)
+  }
+}
+
+const atualizarStatus = async (novoStatus) => {
+  try {
+    await api.patch(`/consultas/${consultaSelecionada.value.id}/status`, {
+      status: novoStatus
+    })
+    alert(`Consulta ${novoStatus} com sucesso!`)
+    carregarConsultas()
+    consultaSelecionada.value = null
+  } catch (erro) {
+    console.error(erro.response?.data || erro)
+    alert('Erro ao atualizar status da consulta')
+  }
 }
 
 
@@ -380,6 +422,28 @@ body {
     border-radius: 50%;
 }
 
+.detalhes-consulta {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 8px;
+}
+
+.acoes-consulta {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.acoes-consulta button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
 .info span {
     font-size: 13px;
     color: #666;
@@ -538,6 +602,7 @@ textarea {
   padding: 10px 20px;
   border-radius: 8px;
   border: none;
+  cursor: pointer;
 }
 
 .cadastrar {
@@ -546,6 +611,7 @@ textarea {
   padding: 10px 20px;
   border-radius: 8px;
   border: none;
+  cursor: pointer;
 }
 
 </style>

@@ -13,10 +13,7 @@
 
         <h2 class="title">Dashboard</h2>
         <p class="subtitle">Visão geral da clínica</p>
-       
-        <div class="search-box">
-            <input type="text" placeholder="Buscar paciente..." />
-        </div>
+ 
        
 <div class="cards">
       <Card
@@ -277,13 +274,7 @@ main {
     font-size: 13px;
 }
 
-.search-box input {
-    width: 100%;
-    padding: 12px 15px;
-    margin: 20px 0;
-    border: 1px solid #cfd8e3;
-    border-radius: 8px;
-}
+
 
 .confirmada { background: #d1fae5; color: #065f46; }
 .pendente { background: #fef9c3; color: #92400e; }

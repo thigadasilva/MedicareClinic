@@ -7,15 +7,19 @@
       <h3>{{ title }}</h3>
     </div>
     <p class="subtitle">{{ subtitle }}</p>
-    <p class="value">{{ description }}</p> <!-- usa .value pra bater com CSS -->
+    <p class="value">{{ description }}</p> 
     <div class="card-actions" v-if="actions.length">
       <button
         v-for="action in actions"
         :key="action.label"
         @click="action.onClick"
+        :class="action.class"
       >
         {{ action.label }}
       </button>
+      <div class="card-detalhes">
+  <slot name="detalhes"></slot>
+</div>
     </div>
   </div>
 </template>
@@ -45,7 +49,15 @@ defineProps({
   width: 24px;
   height: 24px;
 }
-.card-actions {
-  margin-top: 12px;
+.card-actions button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  margin-right: 6px;
 }
+
+.editar { background: #ff9800; color: #fff; }
+.excluir { background: #d93025; color: #fff; }
+.detalhes { background: #1a73e8; color: #fff; }
 </style>

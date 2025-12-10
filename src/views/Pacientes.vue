@@ -19,77 +19,111 @@
       <p class="subtitle">Visão geral dos pacientes</p>
 
       <div class="search-box">
-        <input type="text" placeholder="Buscar paciente..." />
+        <input v-model="busca" type="text" placeholder="Buscar paciente..." />
       </div>
 
       <div class="cards">
         <Card
-          v-for="paciente in pacientes"
+          v-for="paciente in pacientesFiltrados"
           :key="paciente.id"
           :title="paciente.nome"
-          :subtitle="paciente.cpf"
-          :description="paciente.email"
-        />
+          :subtitle="`Email: ${paciente.email}`"
+          :description="`Telefone: ${paciente.telefone}`"
+          :actions="[
+             { label: 'Editar', onClick: () => abrirModalEditar(paciente), class: 'editar' },
+             { label: 'Excluir', onClick: () => excluirPaciente(paciente.id), class: 'excluir' },
+             { label: 'Detalhes', onClick: () => abrirModalDetalhes(paciente), class: 'detalhes' }
+          ]"  
+        > 
+        </Card>
       </div>
     </main>
 
-    <!-- ✅ MODAL DE CADASTRO -->
-    <div v-if="mostrarModal" class="modal-overlay">
-      <div class="modal">
+    <div v-if="pacienteDetalhes" class="modal-overlay">
+  <div class="modal">
+    <h3>Detalhes do Paciente</h3>
+    
+    <p><strong>Nome:</strong> {{ pacienteDetalhes.nome }}</p>
+    <p><strong>CPF:</strong> {{ pacienteDetalhes.cpf }}</p>
+    <p><strong>Email:</strong> {{ pacienteDetalhes.email || 'Não informado' }}</p>
+    <p><strong>Telefone:</strong> {{ pacienteDetalhes.telefone || 'Não informado' }}</p>
+    <p><strong>Status:</strong> {{ pacienteDetalhes.ativo ? 'Ativo' : 'Inativo' }}</p>
+    <p><strong>Endereço:</strong> {{ pacienteDetalhes.endereco}}</p>
+    <p><strong>CEP:</strong> {{ pacienteDetalhes.cep }}</p>
 
-        <h3>Novo Paciente</h3>
-
-        <form @submit.prevent="cadastrarPaciente">
-
-  <label>Nome Completo *</label>
-  <input v-model="novoPaciente.nome" placeholder="Nome do paciente" required />
-
-  <label>CPF *</label>
-  <input v-model="novoPaciente.cpf" placeholder="000.000.000-00" required />
-
-  <label>E-mail</label>
-  <input v-model="novoPaciente.email" placeholder="email@exemplo.com" />
-
-  <label>Telefone</label>
-  <input v-model="novoPaciente.telefone" placeholder="(00) 00000-0000" />
-
-  <label>Data de Nascimento *</label>
-  <input type="date" v-model="novoPaciente.data_nascimento" required />
-
-  <!-- NOVOS CAMPOS -->
-  <label>Endereço</label>
-  <input v-model="novoPaciente.endereco" placeholder="Rua, número" />
-
-  <label>Cidade</label>
-  <input v-model="novoPaciente.cidade" placeholder="Cidade" />
-
-  <label>Estado</label>
-  <input v-model="novoPaciente.estado" placeholder="Estado" />
-
-  <label>CEP</label>
-  <input v-model="novoPaciente.cep" placeholder="00000-000" />
-
-  <label>Convênio</label>
-  <input v-model="novoPaciente.convenio" placeholder="Nome do convênio" />
-
-  <label>Número do Convênio</label>
-  <input v-model="novoPaciente.numero_convenio" placeholder="Número da carteirinha" />
-
-  <div class="botoes-modal">
-    <button type="button" class="cancelar" @click="fecharModal">Cancelar</button>
-    <button type="submit" class="cadastrar">Cadastrar</button>
-  </div>
-
-</form>
-
-      </div>
+    <div class="botoes-modal">
+      <button type="button" class="cancelar" @click="fecharModalDetalhes">Fechar</button>
     </div>
+  </div>
+</div>
+
+  <div v-if="mostrarModal" class="modal-overlay">
+  <div class="modal">
+    <h3>Novo Paciente</h3>
+
+    <form @submit.prevent="cadastrarPaciente">
+      <!-- Etapa 1 -->
+      <div v-if="etapaAtual === 1">
+        <label>Nome Completo *</label>
+        <input v-model="novoPaciente.nome" required />
+
+        <label>CPF *</label>
+        <input v-model="novoPaciente.cpf" required />
+
+        <label>Data de Nascimento *</label>
+        <input type="date" v-model="novoPaciente.data_nascimento" required />
+      </div>
+
+      <!-- Etapa 2 -->
+      <div v-if="etapaAtual === 2">
+        <label>E-mail</label>
+        <input v-model="novoPaciente.email" required/>
+
+        <label>Telefone</label>
+        <input v-model="novoPaciente.telefone" required/>
+
+        <label>Endereço</label>
+        <input v-model="novoPaciente.endereco" required/>
+
+        <label>Cidade</label>
+        <input v-model="novoPaciente.cidade" required/>
+
+        <label>Estado</label>
+        <input v-model="novoPaciente.estado" required/>
+
+        <label>CEP</label>
+        <input v-model="novoPaciente.cep"required/>
+      </div>
+
+      <!-- Etapa 3 -->
+      <div v-if="etapaAtual === 3">
+        <label>Convênio</label>
+        <input v-model="novoPaciente.convenio" required/>
+
+        <label>Número do Convênio</label>
+        <input v-model="novoPaciente.numero_convenio" required/>
+      </div>
+
+      <div class="botoes-modal">
+  <button type="button" class="cancelar" @click="fecharModal">Cancelar</button>
+  <button type="button" class="voltar" @click="etapaAtual--" v-if="etapaAtual > 1">Voltar</button>
+  <button type="button" class="proximo" @click="etapaAtual++" v-if="etapaAtual < 3" :disabled="!validarEtapa()">
+  Próximo
+</button>
+<button type="submit" class="cadastrar" v-if="etapaAtual === 3" :disabled="!validarEtapa()">
+  Cadastrar
+</button>
+</div>
+    </form>
+  </div>
+</div>
+
 
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import api from '@/services/api.js'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
@@ -101,6 +135,9 @@ const router = useRouter()
 
 const pacientes = ref([])
 const mostrarModal = ref(false)
+const pacienteEditando = ref(null)
+const etapaAtual = ref(1)
+
 
 const novoPaciente = reactive({
   nome: '',
@@ -125,8 +162,55 @@ onMounted(() => {
   carregarPacientes()
 })
 
+const validarEtapa = () => {
+  if (etapaAtual.value === 1) {
+    return novoPaciente.nome && novoPaciente.cpf && novoPaciente.data_nascimento
+  }
+  if (etapaAtual.value === 2) {
+    return novoPaciente.email && novoPaciente.telefone && novoPaciente.endereco &&
+           novoPaciente.cidade && novoPaciente.estado && novoPaciente.cep
+  }
+  if (etapaAtual.value === 3) {
+    return novoPaciente.convenio && novoPaciente.numero_convenio
+  }
+  return true
+}
+
+const busca = ref('')
+
+const pacientesFiltrados = computed(() => {
+  if (!busca.value) return pacientes.value
+  return pacientes.value.filter(p =>
+    p.nome.toLowerCase().includes(busca.value.toLowerCase()) ||
+    p.cpf.toLowerCase().includes(busca.value.toLowerCase()) ||
+    (p.email && p.email.toLowerCase().includes(busca.value.toLowerCase()))
+  )
+})
+
+const pacienteDetalhes = ref(null)
+
+const abrirModalDetalhes = async (paciente) => {
+  try {
+    const response = await api.get(`/pacientes/${paciente.id}`)
+    pacienteDetalhes.value = response.data
+  } catch (erro) {
+    console.error('Erro ao buscar detalhes do paciente:', erro.response?.data || erro)
+    alert('Erro ao carregar detalhes do paciente')
+  }
+}
+
+const fecharModalDetalhes = () => {
+  pacienteDetalhes.value = null
+}
+
+
 // ✅ ABRIR / FECHAR MODAL
 const abrirModal = () => {
+  mostrarModal.value = true
+}
+
+const abrirModalEditar = (paciente) => {
+  pacienteEditando.value = { ...paciente }
   mostrarModal.value = true
 }
 
@@ -160,6 +244,33 @@ const cadastrarPaciente = async () => {
   } catch (erro) {
     console.error('Erro ao cadastrar paciente:', erro.response?.data || erro)
     alert('Erro ao cadastrar paciente')
+  }
+}
+
+
+// ✅ ATUALIZAR MÉDICO
+const atualizarPaciente = async () => {
+  try {
+    await api.patch(`/pacientes/${pacienteEditando.value.id}`, pacienteEditando.value)
+    alert('Paciente atualizado com sucesso!')
+    fecharModal()
+    carregarPacientes()
+  } catch (erro) {
+    console.error(erro)
+    alert('Erro ao atualizar paciente')
+  }
+}
+
+// ✅ EXCLUIR MÉDICO
+const excluirPaciente = async (id) => {
+  if (!confirm('Tem certeza que deseja excluir este paciente?')) return
+  try {
+    await api.delete(`/pacientes/${id}`)
+    alert('Paciente excluído com sucesso!')
+    carregarPacientes()
+  } catch (erro) {
+    console.error(erro)
+    alert('Erro ao excluir paciente')
   }
 }
 
@@ -440,15 +551,22 @@ main {
 .modal form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px; /* espaço entre os campos */
+}
+
+.modal label {
+  font-weight: 500;
+  margin-bottom: 4px;
 }
 
 .modal input,
 .modal select {
+  width: 100%;
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #ccc;
 }
+
 
 .botoes-modal {
   display: flex;
@@ -458,17 +576,44 @@ main {
 
 .cancelar {
   background: #e5e7eb;
+  color: #333;
   padding: 10px 20px;
   border-radius: 8px;
   border: none;
+  cursor: pointer;
+}
+
+.voltar {
+  background: #999;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.proximo {
+  background: #1a73e8;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
 }
 
 .cadastrar {
-  background: #1a73e8;
-  color: white;
+  background: #10b981;
+  color: #fff;
   padding: 10px 20px;
   border-radius: 8px;
   border: none;
+  cursor: pointer;
+}
+
+.proximo:disabled,
+.cadastrar:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }
 
 

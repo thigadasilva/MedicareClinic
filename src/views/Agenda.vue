@@ -12,10 +12,6 @@
         <h1>Agenda</h1>
         <span class="subtitle">Atendimentos e registros médicos</span>
 
-        <div class="search-box">
-            <input type="text" placeholder="Buscar paciente..." />
-        </div>
-
         <div class="agenda-container">
 
        <CalendarComponent 
@@ -316,14 +312,6 @@ body {
 .subtitle {
     color: #777;
     font-size: 14px;
-}
-
-.search-box input {
-    width: 100%;
-    padding: 12px 15px;
-    margin: 20px 0;
-    border: 1px solid #cfd8e3;
-    border-radius: 8px;
 }
 
 .consultas-container {
