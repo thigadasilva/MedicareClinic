@@ -19,7 +19,7 @@
  
 
   <div class="search-box">
-    <input v-model="busca" type="text" placeholder="Buscar paciente..." />
+    <input v-model="busca" type="text" placeholder="Buscar consulta..." />
   </div>
 
   <section class="consultas-container">

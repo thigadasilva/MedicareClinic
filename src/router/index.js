@@ -6,6 +6,7 @@ import Agenda from '@/views/Agenda.vue'
 import Consultas from '@/views/Consultas.vue'
 import Pacientes from '@/views/Pacientes.vue'
 import Medicos from '@/views/Medicos.vue'
+import Atendimento from '@/views/Atendimento.vue'
 
 const routes = [
   {
@@ -22,6 +23,12 @@ const routes = [
     path: '/dashboard',
     name: 'Dashboard',
     component: Dashboard,
+    meta: {requiresAuth: true}
+  },
+  {
+    path: '/atendimento',
+    name: 'Atendimento',
+    component: Atendimento,
     meta: {requiresAuth: true}
   },
   {

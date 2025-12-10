@@ -1,3 +1,4 @@
+// atendimento.js
 import api from '@/services/api'
 
 const state = {
@@ -51,6 +52,7 @@ const actions = {
     },
      async createAtendimento({commit}, atendimento){
         try{
+            // ✅ Envia os campos corretos para o registro de prontuário
             const response = await api.post('/atendimentos',{
                 consultaId: atendimento.consultaId,
                 anamnese: atendimento.anamnese,
@@ -59,8 +61,7 @@ const actions = {
                 observacoes: atendimento.observacoes,
                 exames_solicitados: atendimento.exames_solicitados,
                 retorno_dias: atendimento.retorno_dias,
-                medicoId: atendimento.medicoId,
-                data_atendimento: atendimento.data_atendimento,
+                // medicoId e data_atendimento são definidos no backend
             })
             commit('ADD_ATENDIMENTO', response.data)
             return { success: true}
@@ -68,22 +69,20 @@ const actions = {
             console.error('Erro ao criar atendimento: ', error)
             return{
                 success: false,
-                message: error.response?.data?.message || "Erro ao criar atendimento"
+                message: error.response?.data?.erro || "Erro ao criar atendimento" // Pega 'erro' do controller
             }
         } 
     },
      async updateAtendimento({commit}, atendimento){
         try {
-            const response = await api.patch(`/atendimentos/${atendimento.id}`, {
-               consultaId: atendimento.consultaId,
+            const response = await api.put(`/atendimentos/${atendimento.id}`, {
+                // ... campos que podem ser atualizados
                 anamnese: atendimento.anamnese,
                 diagnostico: atendimento.diagnostico,
                 prescricao: atendimento.prescricao,
                 observacoes: atendimento.observacoes,
                 exames_solicitados: atendimento.exames_solicitados,
-                retorno_dias: atendimento.retorno_dias,
-                medicoId: atendimento.medicoId,
-                data_atendimento: atendimento.data_atendimento
+                retorno_dias: atendimento.retorno_dias
             })
             commit('UPDATE_ATENDIMENTO', response.data)
             return {success: true}
@@ -91,7 +90,7 @@ const actions = {
             console.error('Erro ao atualizar atendimento: ', error)
             return{
                 success: false,
-                message: error.response?.data?.message || 'Erro ao atualizar atendimento!'
+                message: error.response?.data?.erro || 'Erro ao atualizar atendimento!'
             }
         }
     },
@@ -104,7 +103,7 @@ const actions = {
             console.error('Erro ao deletar atendimento: ', error)
             return{
                 success: false,
-                message: error.response?.data?.message || 'Erro ao deletar atendimento!'
+                message: error.response?.data?.erro || 'Erro ao deletar atendimento!'
             }
         }
     }
@@ -112,6 +111,7 @@ const actions = {
 
 const getters = {
     atendimentos: (state) => state.atendimentos,
+    totalAtendimentos: (state) => state.atendimentos.length,
     loading: (state) => state.loading,
     error: (state) => state.error
 }

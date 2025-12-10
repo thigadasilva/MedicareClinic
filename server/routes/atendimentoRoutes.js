@@ -5,8 +5,8 @@ const authMiddleware = require('../middlewares/authMiddleware')
 
 router.use(authMiddleware)
 
-router.get('/api/atendimentos', atendimentoController.listar)
-router.get('/api/atendimentos/:id', atendimentoController.buscarPorId)
-router.get('/api/consultas/:id/atendimento', atendimentoController.buscarPorConsulta)
-router.post('/api/atendimentos', atendimentoController.criar)
-router.put('/api/atendimentos/:id', atendimentoController.atualizar)
+router.get('/', atendimentoController.listar)
+router.get('/:id', atendimentoController.buscarPorId)
+router.get('/consultas/:id/atendimento', atendimentoController.buscarPorConsulta)
+router.post('/', atendimentoController.criar)
+router.put('/:id', atendimentoController.atualizar)

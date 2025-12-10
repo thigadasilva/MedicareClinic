@@ -53,6 +53,7 @@ const rotasPorCargo = {
     admin: [
         {name: 'dashboard', path: 'dashboard', label: 'Dashboard'},
         {name: 'agenda', path: 'agenda', label: 'Agenda'},
+         {name: 'atendimento', path: 'atendimento', label: 'Atendimento'},
         {name: 'consultas', path: 'consultas', label: 'Consultas'},
         {name: 'pacientes', path: 'pacientes', label: 'Pacientes'},
         {name: 'medicos', path: 'medicos', label: 'Médicos'}    
