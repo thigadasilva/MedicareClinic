@@ -499,12 +499,43 @@ main {
 }
 
 .modal {
-  background: white;
+  background: #fff;
   padding: 25px;
   border-radius: 12px;
   width: 400px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15); /* sombra suave */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
 }
 
+.modal h3 {
+  margin-bottom: 20px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #2c3e50; /* azul escuro elegante */
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+
+.modal p {
+  margin: 10px 0;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.modal strong {
+  color: #34495e; /* destaque no label */
+}
+
+.modal p:last-child {
+  margin-top: 15px;
+  font-weight: 500;
+  color: #27ae60; /* verde para status ativo */
+}
+
+.modal p:last-child.inativo {
+  color: #e74c3c; /* vermelho para status inativo */
+}
 .modal form {
   display: flex;
   flex-direction: column;

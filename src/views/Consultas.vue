@@ -58,8 +58,8 @@
     <button @click="atualizarStatus('em_atendimento')">Iniciar Atendimento</button>
     <button @click="atualizarStatus('realizada')">Finalizar</button>
     <button @click="atualizarStatus('cancelada')">Cancelar</button>
-    <button class="excluir" @click="excluirConsulta">Excluir</button>
   </div>
+    <button class="excluir" @click="excluirConsulta">Excluir</button>
 </div>
   </section>
 
@@ -464,12 +464,24 @@ body {
   cursor: pointer;
 }
 
+.excluir {
+  background-color: #e74c3c; /* vermelho */
+  color: #fff;
+  border: none;
+  padding: 10px 30px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 12px;         /* espaço extra acima */
+  align-self: flex-end;     /* alinha à direita dentro do flex */
+}
 
+.excluir:hover {
+  background-color: #c0392b; 
+}
 .info span {
     font-size: 13px;
     color: #666;
 }
-
 .time {
     margin-left: auto;
     margin-right: 10px;
