@@ -123,4 +123,20 @@ exports.cancelar = async (req, res) => {
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao cancelar consulta.', detalhe: error.message });
   }
+}
+
+// DELETE /consultas/:id
+exports.excluir = async (req, res) => {
+  try {
+    const consulta = await Consulta.findByPk(req.params.id);
+
+    if (!consulta) {
+      return res.status(404).json({ erro: 'Consulta não encontrada.' });
+    }
+
+    await consulta.destroy();   // remove do banco
+    res.json({ mensagem: 'Consulta excluída com sucesso.' });
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao excluir consulta.', detalhe: error.message });
+  }
 };

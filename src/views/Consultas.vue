@@ -58,6 +58,7 @@
     <button @click="atualizarStatus('em_atendimento')">Iniciar Atendimento</button>
     <button @click="atualizarStatus('realizada')">Finalizar</button>
     <button @click="atualizarStatus('cancelada')">Cancelar</button>
+    <button class="excluir" @click="excluirConsulta">Excluir</button>
   </div>
 </div>
   </section>
@@ -96,6 +97,8 @@
         <div class="botoes-modal">
           <button type="button" class="cancelar" @click="fecharModal">Cancelar</button>
           <button type="submit" class="cadastrar">Agendar</button>
+
+          
         </div>
       </form>
     </div>
@@ -156,9 +159,11 @@ const carregarConsultas = async () => {
       id: c.id,
       paciente: c.paciente?.nome || 'Paciente não informado',
       medico: c.medico?.nome || 'Médico não informado',
+      data_consulta: c.data_consulta,  
       tipo: c.tipo,
       hora: c.hora_consulta,
-      status: c.status
+      status: c.status,
+      motivo: c.motivo
     }))
   } catch (erro) {
     console.error('Erro ao buscar consultas:', erro.response?.data || erro)
@@ -176,6 +181,22 @@ const atualizarStatus = async (novoStatus) => {
   } catch (erro) {
     console.error(erro.response?.data || erro)
     alert('Erro ao atualizar status da consulta')
+  }
+}
+
+const excluirConsulta = async () => {
+  if (!consultaSelecionada.value) return
+  const confirmar = confirm("Tem certeza que deseja excluir esta consulta?")
+  if (!confirmar) return
+
+  try {
+    await api.delete(`/consultas/${consultaSelecionada.value.id}`)
+    alert("Consulta excluída com sucesso!")
+    carregarConsultas()
+    consultaSelecionada.value = null
+  } catch (erro) {
+    console.error(erro.response?.data || erro)
+    alert("Erro ao excluir consulta")
   }
 }
 
