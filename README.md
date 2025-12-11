@@ -1,44 +1,91 @@
-# medicareclinic
+MedicareClinic 🏥
+O MedicareClinic é um sistema de gestão para clínicas médicas, permitindo:
 
-This template should help get you started developing with Vue 3 in Vite.
+Cadastro e gerenciamento de pacientes 👩‍⚕️
 
-## Recommended IDE Setup
+Agendamento de consultas 📅
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Controle de médicos e especialidades 🩺
 
-## Recommended Browser Setup
+Painel administrativo para acompanhar atendimentos 📊
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) 
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+Este projeto possui frontend em Vue 3 + Vite e backend em Node.js/Express.
 
-## Customize configuration
+🚀 Tecnologias Utilizadas
+Frontend: Vue 3, Vite, Axios
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+Backend: Node.js, Express, SQLite/MySQL (dependendo da configuração)
 
-## Project Setup
+ESLint para padronização de código
 
-```sh
+📂 Estrutura do Projeto
+Código
+MedicareClinic/
+├── src/              # Código do frontend (Vue)
+├── server/           # Código do backend (Node/Express)
+├── public/           # Arquivos estáticos
+├── index.html        # Entrada do frontend
+├── vite.config.js    # Configuração do Vite
+├── package.json      # Dependências e scripts
+└── .env.example      # Exemplo de variáveis de ambiente
+⚙️ Pré-requisitos
+Antes de rodar, instale:
+
+Node.js (versão 18+)
+
+npm ou yarn
+
+Banco de dados SQLite (já integrado) ou MySQL (se configurado no backend)
+
+📥 Instalação
+Clone o repositório e instale as dependências:
+
+bash
+# Clonar o repositório
+git clone https://github.com/thigadasilva/MedicareClinic.git
+
+# Entrar na pasta
+cd MedicareClinic
+
+# Instalar dependências
 npm install
-```
+▶️ Executando o Projeto
+1. Configurar variáveis de ambiente
+Crie um arquivo .env na raiz do projeto baseado no .env.example. Exemplo:
 
-### Compile and Hot-Reload for Development
+env
+# Backend
+PORT=3000
+DB_URL=sqlite://./server/database.sqlite
 
-```sh
+# Frontend
+VITE_API_URL=http://localhost:3000
+2. Rodar o Backend
+bash
+cd server
+npm install
 npm run dev
-```
+O backend será iniciado em http://localhost:3000
 
-### Compile and Minify for Production
+3. Rodar o Frontend
+Em outro terminal:
 
-```sh
-npm run build
-```
+bash
+npm run dev
+O frontend será iniciado em http://localhost:5173
 
-### Lint with [ESLint](https://eslint.org/)
+🧪 Scripts Disponíveis
+npm run dev → inicia frontend em modo desenvolvimento
 
-```sh
-npm run lint
-```
+npm run lint → verifica problemas de estilo
+
+npm run dev (no server/) → inicia backend em modo desenvolvimento
+
+🔑 Funcionalidades Disponíveis
+Cadastro de pacientes: formulário para inserir dados pessoais
+
+Agendamento de consultas: escolha de médico, especialidade e horário
+
+Listagem de médicos: painel administrativo para gerenciar profissionais
+
+Dashboard: visão geral dos atendimentos e estatísticas
