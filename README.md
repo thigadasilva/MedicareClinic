@@ -1,4 +1,5 @@
-## MedicareClinic 🏥
+# MedicareClinic 🏥
+
 O MedicareClinic é um sistema de gestão para clínicas médicas, permitindo:
 
 Cadastro e gerenciamento de pacientes 👩‍⚕️
@@ -14,7 +15,7 @@ Este projeto possui frontend em Vue 3 + Vite e backend em Node.js/Express.
 🚀 Tecnologias Utilizadas
 Frontend: Vue 3, Vite, Axios
 
-Backend: Node.js, Express, SQLite/MySQL (dependendo da configuração)
+Backend: Node.js, Express, SQLite
 
 ESLint para padronização de código
 
@@ -49,14 +50,15 @@ cd MedicareClinic
 
 # Instalar dependências
 npm install
-▶️ Executando o Projeto
+
+## ▶️ Executando o Projeto
 1. Configurar variáveis de ambiente
 Crie um arquivo .env na raiz do projeto baseado no .env.example. Exemplo:
 
 env
 # Backend
 PORT=3000
-DB_URL=sqlite://./server/database.sqlite
+DB_URL=sqlite://./server/database.db
 
 # Frontend
 VITE_API_URL=http://localhost:3000
