@@ -33,7 +33,7 @@ MedicareClinic/
 ```
 
 
-⚙️ Pré-requisitos
+⚙️ Pré-requisitos </br>
 Antes de rodar, instale:
 
 Node.js (versão 18+)
