@@ -20,7 +20,7 @@ Backend: Node.js, Express, SQLite
 ESLint para padronização de código
 
 📂 Estrutura do Projeto
-Código
+
 MedicareClinic/
 ├── src/              # Código do frontend (Vue)
 ├── server/           # Código do backend (Node/Express)
@@ -29,6 +29,8 @@ MedicareClinic/
 ├── vite.config.js    # Configuração do Vite
 ├── package.json      # Dependências e scripts
 └── .env.example      # Exemplo de variáveis de ambiente
+
+
 ⚙️ Pré-requisitos
 Antes de rodar, instale:
 
