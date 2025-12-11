@@ -1,4 +1,4 @@
-MedicareClinic 🏥
+## MedicareClinic 🏥
 O MedicareClinic é um sistema de gestão para clínicas médicas, permitindo:
 
 Cadastro e gerenciamento de pacientes 👩‍⚕️
