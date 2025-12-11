@@ -7,6 +7,7 @@ router.use(authMiddleware)
 
 router.get('/', consultaController.listar)
 router.get('/total-agendadas', consultaController.totalAgendadas)
+router.get('/pendentes', consultaController.consultasPendentes)
 router.get('/:id', consultaController.buscarPorId)
 router.post('/', consultaController.criar)
 router.patch('/:id/status', consultaController.atualizarStatus)

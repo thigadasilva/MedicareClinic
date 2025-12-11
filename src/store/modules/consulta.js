@@ -40,7 +40,7 @@ const actions = {
         commit('SET_ERROR', null)
 
         try {
-            const response = await api.get('/consultas')
+            const response = await api.get('/api/consultas')
             commit('SET_CONSULTAS', response.data)
         } catch (error) {
             console.error('Erro ao buscar consultas: ', error)
@@ -51,7 +51,7 @@ const actions = {
     },
      async createConsulta({commit}, consulta){
         try{
-            const response = await api.post('/consultas',{
+            const response = await api.post('/api/consultas',{
                 protocolo: consulta.protocolo,
                 pacienteId: consulta.pacienteId,
                 medicoId: consulta.medicoId,
@@ -78,7 +78,7 @@ const actions = {
     },
     async updateConsulta({commit}, consulta){
         try {
-            const response = await api.patch(`/consultas/${consulta.id}`, {
+            const response = await api.patch(`/api/consultas/${consulta.id}`, {
                 protocolo: consulta.protocolo,
                 pacienteId: consulta.pacienteId,
                 medicoId: consulta.medicoId,
@@ -105,7 +105,7 @@ const actions = {
     },
     async deleteConsulta({commit}, consultaId){
         try {
-            await api.delete(`/consultas/${consultaId}`)
+            await api.delete(`/api/consultas/${consultaId}`)
             commit('DELETE_CONSULTA', consultaId)
             return { success: true}
         } catch (error) {

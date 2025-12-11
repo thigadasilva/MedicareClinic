@@ -23,7 +23,7 @@ const Consulta = sequelize.define('Consulta', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: Profissional,
+      model: 'Profissionals',
       key: 'id',
     },
   },
@@ -74,7 +74,7 @@ const Consulta = sequelize.define('Consulta', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: Profissional,
+      model: 'Profissionals',
       key: 'id',
     },
   },

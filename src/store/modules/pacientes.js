@@ -40,7 +40,7 @@ const actions = {
     commit('SET_ERROR', null)
 
     try {
-      const response = await api.get('/pacientes/')
+      const response = await api.get('/api/pacientes/')
       commit('SET_PACIENTES', response.data)
     } catch (error) {
       console.error('Erro ao buscar pacientes:', error)
@@ -54,7 +54,7 @@ const actions = {
     commit('SET_ERROR', null)
 
     try{
-      const response = await api.get(`/pacientes/${pacienteId}`)
+      const response = await api.get(`/api/pacientes/${pacienteId}`)
 
       commit('SET_PACIENTE_ATIVO', response.data)
 
@@ -70,7 +70,7 @@ const actions = {
 
   async createPaciente({ commit }, paciente) {
     try {
-      const response = await api.post('/pacientes', {
+      const response = await api.post('/api/pacientes', {
         nome: paciente.nome,
         cpf: paciente.cpf,
         data_nascimento: paciente.data_nascimento,
@@ -96,7 +96,7 @@ const actions = {
   },
   async updatePaciente({ commit }, paciente) {
     try {
-      const response = await api.patch(`/pacientes/${paciente.id}`, {
+      const response = await api.patch(`/api/pacientes/${paciente.id}`, {
         nome: paciente.nome,
         telefone: paciente.telefone,
         email: paciente.email,
@@ -120,7 +120,7 @@ const actions = {
   },
   async deletePaciente({ commit }, pacienteId) {
     try {
-      await api.delete(`/pacientes/${pacienteId}`)
+      await api.delete(`/api/pacientes/${pacienteId}`)
       commit('DELETE_PACIENTE', pacienteId)
       return { success: true }
     } catch (error) {

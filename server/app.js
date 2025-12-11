@@ -5,6 +5,7 @@ const rotasPaciente = require('./routes/pacienteRoutes')
 const rotasAuth = require('./routes/authRoutes')
 const rotasConsultas = require('./routes/consultaRoutes')
 const rotasProfissionais = require('./routes/profissionalRoutes')
+const rotasAtendimentos = require('./routes/atendimentoRoutes')
 
 const app = express()
 const sequelize = require('./config/database')
@@ -23,13 +24,15 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/pacientes', rotasPaciente)
+app.use('/api/pacientes', rotasPaciente)
 app.use('/api/auth', rotasAuth)
-app.use('/profissionais', rotasProfissionais)
-app.use('/consultas', rotasConsultas)
+app.use('/api/profissionais', rotasProfissionais)
+app.use('/api/atendimentos', rotasAtendimentos)
+app.use('/api/consultas', rotasConsultas)
 
 
-sequelize.sync().then(() => {
+
+sequelize.sync({}).then(() => {
   console.log('Banco de dados sincronizado.')
   app.listen(PORT, () => {
     console.log(`Servidor rodando em http://127.0.0.1:${PORT}`)

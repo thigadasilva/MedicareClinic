@@ -39,7 +39,7 @@ const Atendimento = sequelize.define('Atendimento', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Profissionais',
+      model: 'Profissionals',
       key: 'id',
     },
   },

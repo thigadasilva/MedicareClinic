@@ -59,10 +59,12 @@ const rotasPorCargo = {
         {name: 'medicos', path: 'medicos', label: 'Médicos'}    
     ],
     medico: [
-        {name: 'agenda', path: 'agenda', label: 'Agenda'}      
+        {name: 'agenda', path: 'agenda', label: 'Agenda'},
+        {name: 'atendimento', path: 'atendimento', label: 'Atendimento'},      
     ],
     recepcionista: [
-        {name: 'consultas', path: 'consultas', label: 'Consultas'}
+        {name: 'consultas', path: 'consultas', label: 'Consultas'},
+        {name: 'pacientes', path: 'pacientes', label: 'Pacientes'}
     ]
 }
 

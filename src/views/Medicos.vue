@@ -127,7 +127,7 @@ const formMedico = computed(() => medicoEditando.value || novoMedico)
 // ✅ BUSCAR MÉDICOS
 const carregarMedicos = async () => {
   try {
-    const response = await api.get('/profissionais/medicos')
+    const response = await api.get('/api/profissionais/medicos')
     medicos.value = response.data.map(m => ({ ...m, mostrarDetalhes: false }))
   } catch (erro) {
     console.error('Erro ao buscar medicos:', erro.response?.data || erro)
@@ -142,7 +142,7 @@ const medicoDetalhes = ref(null)
 const abrirModalDetalhes = async (medico) => {
   try {
     // busca os dados completos do médico pelo ID
-    const response = await api.get(`/profissionais/${medico.id}`)
+    const response = await api.get(`/api/profissionais/${medico.id}`)
      console.log(response.data)
     medicoDetalhes.value = response.data
   } catch (erro) {
@@ -182,7 +182,7 @@ const fecharModal = () => {
 // ✅ CADASTRAR MÉDICO
 const cadastrar = async () => {
   try {
-    await api.post('/profissionais', novoMedico)
+    await api.post('/api/profissionais', novoMedico)
     alert('Médico cadastrado com sucesso!')
     fecharModal()
     carregarMedicos()
@@ -196,7 +196,7 @@ const cadastrar = async () => {
 // ✅ ATUALIZAR MÉDICO
 const atualizarMedico = async () => {
   try {
-    await api.patch(`/profissionais/${medicoEditando.value.id}`, medicoEditando.value)
+    await api.patch(`/api/profissionais/${medicoEditando.value.id}`, medicoEditando.value)
     alert('Médico atualizado com sucesso!')
     fecharModal()
     carregarMedicos()
@@ -210,7 +210,7 @@ const atualizarMedico = async () => {
 const excluirMedico = async (id) => {
   if (!confirm('Tem certeza que deseja excluir este médico?')) return
   try {
-    await api.delete(`/profissionais/${id}`)
+    await api.delete(`/api/profissionais/${id}`)
     alert('Médico excluído com sucesso!')
     carregarMedicos()
   } catch (erro) {

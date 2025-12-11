@@ -150,7 +150,7 @@ const novoPaciente = reactive({
 // ✅ BUSCAR PACIENTES
 const carregarPacientes = async () => {
   try {
-    const response = await api.get('/pacientes')
+    const response = await api.get('/api/pacientes')
     pacientes.value = response.data
   } catch (erro) {
     console.error('Erro ao buscar pacientes:', erro.response?.data || erro)
@@ -191,7 +191,7 @@ const pacienteDetalhes = ref(null)
 
 const abrirModalDetalhes = async (paciente) => {
   try {
-    const response = await api.get(`/pacientes/${paciente.id}`)
+    const response = await api.get(`/api/pacientes/${paciente.id}`)
     pacienteDetalhes.value = response.data
   } catch (erro) {
     console.error('Erro ao buscar detalhes do paciente:', erro.response?.data || erro)
@@ -221,7 +221,7 @@ const fecharModal = () => {
 // ✅ CADASTRAR PACIENTE
 const cadastrarPaciente = async () => {
   try {
-    await api.post('/pacientes', novoPaciente)
+    await api.post('/api/pacientes', novoPaciente)
 
     alert('Paciente cadastrado com sucesso!')
     fecharModal()
@@ -244,20 +244,6 @@ const cadastrarPaciente = async () => {
   } catch (erro) {
     console.error('Erro ao cadastrar paciente:', erro.response?.data || erro)
     alert('Erro ao cadastrar paciente')
-  }
-}
-
-
-// ✅ ATUALIZAR MÉDICO
-const atualizarPaciente = async () => {
-  try {
-    await api.patch(`/pacientes/${pacienteEditando.value.id}`, pacienteEditando.value)
-    alert('Paciente atualizado com sucesso!')
-    fecharModal()
-    carregarPacientes()
-  } catch (erro) {
-    console.error(erro)
-    alert('Erro ao atualizar paciente')
   }
 }
 

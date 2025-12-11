@@ -1,4 +1,4 @@
-const { Consulta, Paciente, Profissional } = require('../models')
+const { Consulta, Paciente, Profissional, Atendimento } = require('../models')
 const { Op } = require('sequelize');
 
 
@@ -36,6 +36,29 @@ exports.totalAgendadas = async (req, res) => {
     res.json({ totalAgendadas: total })
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao contar consultas agendadas.' })
+  }
+}
+
+exports.consultasPendentes = async (req, res) => {
+  try {
+    const consultas = await Consulta.findAll({
+      where: {
+        status: ['agendada', 'confirmada', 'em_atendimento']
+      },
+      include: [
+        { model: Paciente, as: 'paciente' },
+        { model: Profissional, as: 'medico' },
+         { model: Profissional, as: 'recepcionista' },
+        { model: Atendimento } // sem alias porque não definiu
+      ]
+    })
+
+    // filtra apenas as que ainda não têm atendimento
+    const pendentes = consultas.filter(c => !c.Atendimento)
+    res.json(pendentes)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ erro: 'Erro ao buscar consultas pendentes.' })
   }
 }
 

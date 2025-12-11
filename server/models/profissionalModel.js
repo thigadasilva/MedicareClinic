@@ -16,7 +16,7 @@ const Profissional = sequelize.define('Profissional', {
   },
   crm: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
     unique: true
   },
   especialidade: {
@@ -33,17 +33,7 @@ const Profissional = sequelize.define('Profissional', {
   senha: {
     type: DataTypes.STRING,
     allowNull: false
-  },
-  createdAt: {
-  type: DataTypes.DATE,
-  allowNull: false,
-  defaultValue: sequelize.NOW
-},
-updatedAt: {
-  type: DataTypes.DATE,
-  allowNull: false,
-  defaultValue: sequelize.NOW
-}
+  }
 },
 {
   tableName: 'Profissionals', // <-- força o nome certo

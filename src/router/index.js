@@ -47,7 +47,7 @@ const routes = [
     path: '/pacientes',
     name: 'Pacientes',
     component: Pacientes,
-    meta: {requiresAuth: true, requiresAdmin: true}
+    meta: {requiresAuth: true}
   },
   {
     path: '/medicos',

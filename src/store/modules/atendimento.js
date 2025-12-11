@@ -41,7 +41,7 @@ const actions = {
         commit('SET_ERROR', null)
 
         try {
-            const response = await api.get('/atendimentos')
+            const response = await api.get('/api/atendimentos')
             commit('SET_ATENDIMENTOS', response.data)
         } catch (error) {
             console.error('Erro ao buscar atendimentos: ', error)
@@ -53,7 +53,7 @@ const actions = {
      async createAtendimento({commit}, atendimento){
         try{
             // ✅ Envia os campos corretos para o registro de prontuário
-            const response = await api.post('/atendimentos',{
+            const response = await api.post('/api/atendimentos',{
                 consultaId: atendimento.consultaId,
                 anamnese: atendimento.anamnese,
                 diagnostico: atendimento.diagnostico,
@@ -75,7 +75,7 @@ const actions = {
     },
      async updateAtendimento({commit}, atendimento){
         try {
-            const response = await api.put(`/atendimentos/${atendimento.id}`, {
+            const response = await api.put(`/api/atendimentos/${atendimento.id}`, {
                 // ... campos que podem ser atualizados
                 anamnese: atendimento.anamnese,
                 diagnostico: atendimento.diagnostico,
@@ -96,7 +96,7 @@ const actions = {
     },
      async deleteAtendimento({commit}, atendimentoId){
         try {
-            await api.delete(`/atendimentos/${atendimentoId}`)
+            await api.delete(`/api/atendimentos/${atendimentoId}`)
             commit('DELETE_ATENDIMENTO', atendimentoId)
             return { success: true}
         } catch (error) {

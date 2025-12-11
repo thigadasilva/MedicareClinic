@@ -51,7 +51,17 @@ exports.listarMedicos = async (req, res) => {
 // POST /profissionais
 exports.criar = async (req, res) => {
   try {
-    const novo = await Profissional.create(req.body)
+     const { senha, ...dados } = req.body
+
+  const senhaHash = await bcrypt.hash(senha, 10)
+
+    const novo = await Profissional.create({
+      ...dados,
+      senha: senhaHash
+    })
+ const { senha: _, ...semSenha } = novo.toJSON()
+  res.status(201).json(semSenha)
+ 
     res.status(201).json(novo)
   } catch (error) {
     console.error('Erro ao criar profissional:', error)

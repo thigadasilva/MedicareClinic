@@ -76,7 +76,7 @@ import BarraLateral from '@/components/barraLateral.vue';
 
   const handleEventClickFromCalendar = (eventId) => {
   console.log(`Evento ${eventId} clicado. Redirecionando...`);
-  router.push(`/consultas/${eventId}/atendimento`); 
+  router.push(`/api/consultas/${eventId}/atendimento`); 
 };
 
 const handleNavigate = (routeName) => {
@@ -132,7 +132,7 @@ const buscarConsultas = async () => {
       params.pacienteId = store.state.auth.user?.id
     }
 
-    const response = await api.get('/consultas', { params })
+    const response = await api.get('/api/consultas', { params })
     const apiConsultas = response.data
 
     calendarEvents.value = apiConsultas.map(consulta => {
@@ -154,7 +154,7 @@ const buscarConsultas = async () => {
 
 const atualizarStatus = async (id, novoStatus) => {
   try {
-    await api.patch(`/consultas/${id}/status`, { status: novoStatus }, {
+    await api.patch(`/api/consultas/${id}/status`, { status: novoStatus }, {
       headers: { Authorization: `Bearer ${store.state.auth.token}` }
     })
     await buscarConsultas() // recarrega lista
@@ -165,7 +165,7 @@ const atualizarStatus = async (id, novoStatus) => {
 
 const cancelarConsulta = async (id) => {
   try {
-    await api.patch(`/consultas/${id}/cancelar`, { motivo_cancelamento: 'Cancelado pelo admin' }, {
+    await api.patch(`/api/consultas/${id}/cancelar`, { motivo_cancelamento: 'Cancelado pelo admin' }, {
       headers: { Authorization: `Bearer ${store.state.auth.token}` }
     })
     await buscarConsultas()

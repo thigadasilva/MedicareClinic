@@ -64,51 +64,67 @@
         </div>
       </section>
 
-      <div v-if="mostrarModal" class="modal-overlay">
-        <div class="modal">
-          <h3>Registrar Prontuário</h3>
-          <form @submit.prevent="cadastrarAtendimento">
-            
-            <label>Consulta a Registrar</label>
-            <select v-model="novoAtendimento.consultaId" required>
-              <option 
-                v-for="c in consultasDisponiveis" 
-                :key="c.id" 
-                :value="c.id"
-              >
-                {{ c.data_formatada }} - {{ c.paciente.nome }} ({{ c.hora }}) - Status: {{ formatarStatus(c.status) }}
-              </option>
-            </select>
-            <small v-if="!consultasDisponiveis.length" style="color: red;">
-              Nenhuma consulta disponível para registro de prontuário (Status: Agendada, Confirmada ou Em Atendimento).
-            </small>
+    <div v-if="mostrarModal" class="modal-overlay">
+  <div class="modal">
+    <h3>Registrar Prontuário</h3>
 
-            <label>Anamnese</label>
-            <textarea v-model="novoAtendimento.anamnese" required></textarea>
-
-            <label>Diagnóstico</label>
-            <textarea v-model="novoAtendimento.diagnostico" required></textarea>
-
-            <label>Prescrição</label>
-            <textarea v-model="novoAtendimento.prescricao"></textarea>
-            
-            <label>Observações</label>
-            <textarea v-model="novoAtendimento.observacoes"></textarea>
-
-            <label>Exames Solicitados</label>
-            <textarea v-model="novoAtendimento.exames_solicitados"></textarea>
-
-            <label>Retorno (dias)</label>
-            <input type="number" v-model="novoAtendimento.retorno_dias" />
-
-
-            <div class="botoes-modal">
-              <button type="button" class="cancelar" @click="fecharModal">Cancelar</button>
-              <button type="submit" class="cadastrar" :disabled="!consultasDisponiveis.length">Registrar</button>
-            </div>
-          </form>
-        </div>
+    <form @submit.prevent="cadastrarAtendimento">
+      <!-- Etapa 1 -->
+      <div v-if="etapaAtual === 1">
+        <label>Consulta a Registrar *</label>
+        <select v-model="novoAtendimento.consultaId" required>
+          <option 
+            v-for="c in consultasDisponiveis" 
+            :key="c.id" 
+            :value="c.id"
+          >
+            {{ c.data_formatada }} - {{ c.paciente.nome }} ({{ c.hora }}) - Status: {{ formatarStatus(c.status) }}
+          </option>
+        </select>
+        <small v-if="!consultasDisponiveis.length" style="color: red;">
+          Nenhuma consulta disponível para registro de prontuário (Agendada, Confirmada ou Em Atendimento).
+        </small>
       </div>
+
+      <!-- Etapa 2 -->
+      <div v-if="etapaAtual === 2">
+        <label>Anamnese *</label>
+        <textarea v-model="novoAtendimento.anamnese" required></textarea>
+
+        <label>Diagnóstico *</label>
+        <textarea v-model="novoAtendimento.diagnostico" required></textarea>
+      </div>
+
+      <!-- Etapa 3 -->
+      <div v-if="etapaAtual === 3">
+        <label>Prescrição</label>
+        <textarea v-model="novoAtendimento.prescricao"></textarea>
+        
+        <label>Observações</label>
+        <textarea v-model="novoAtendimento.observacoes"></textarea>
+
+        <label>Exames Solicitados</label>
+        <textarea v-model="novoAtendimento.exames_solicitados"></textarea>
+
+        <label>Retorno (dias)</label>
+        <input type="number" v-model="novoAtendimento.retorno_dias" />
+      </div>
+
+      <!-- Botões -->
+      <div class="botoes-modal">
+        <button type="button" class="cancelar" @click="fecharModal">Cancelar</button>
+        <button type="button" class="voltar" @click="etapaAtual--" v-if="etapaAtual > 1">Voltar</button>
+        <button type="button" class="proximo" @click="etapaAtual++" v-if="etapaAtual < 3" :disabled="!validarEtapa()">
+          Próximo
+        </button>
+        <button type="submit" class="cadastrar" v-if="etapaAtual === 3" :disabled="!validarEtapa()">
+          Registrar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
     </main>
   </div>
 </template>
@@ -147,26 +163,25 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
-// 1. Carrega os Prontuários (Atendimentos) já registrados pelo médico
+
 const carregarAtendimentos = async () => {
   try {
-    const res = await api.get('/atendimentos')
+    const res = await api.get('/api/atendimentos')
     atendimentos.value = res.data.map(a => {
-      // ✅ MAPEAMENTO CORRIGIDO: Dados de exibição vêm da Consulta (a.Consulta)
       const consulta = a.Consulta || {}
-      const paciente = consulta.Paciente || {}
-      const medico = consulta.Profissional || {}
-      
+      const paciente = consulta.paciente || {}   // ✅ alias correto
+      const medico = consulta.medico || {}       // ✅ alias correto
+
       return {
         id: a.id,
-        consultaId: consulta.id, // Adicionado para uso futuro, se necessário
-        paciente: paciente.nome || 'Paciente não informado',
-        medico: medico.nome || 'Médico não informado',
-        data_atendimento: formatDate(a.data_atendimento), // Data do registro do prontuário
-        data_consulta: formatDate(consulta.data), // Data da Consulta
-        hora: consulta.hora || 'N/A',
+        consultaId: consulta.id || '',
+        paciente: paciente.nome ?? 'Paciente não informado',
+        medico: medico.nome ?? 'Médico não informado',
+        data_atendimento: formatDate(a.data_atendimento),
+        data_consulta: formatDate(consulta.data_consulta), // ✅ campo correto
+        hora: consulta.hora_consulta || 'N/A',             // ✅ campo correto
         tipo: consulta.tipo || 'N/A',
-        status: consulta.status || 'desconhecido', // Status deve vir da Consulta
+        status: consulta.status || 'desconhecido',
         anamnese: a.anamnese,
         diagnostico: a.diagnostico,
         prescricao: a.prescricao,
@@ -183,33 +198,25 @@ const carregarAtendimentos = async () => {
 // 2. Carrega as Consultas que estão prontas para receber um Prontuário
 const carregarConsultasDisponiveis = async () => {
   try {
-    // ⚠️ Requer que você tenha um endpoint /consultas no backend que filtre
-    // por status (agendada, confirmada, em_atendimento) E que não tenham atendimento
-    // Para simplificar, vou assumir que existe um endpoint simples /consultas/medico
-    
-    // Supondo que você tem um endpoint que retorna as consultas do médico
-    const res = await api.get('/consultas/pendentes') // ⚠️ Você pode precisar criar esse endpoint
-    
+    const res = await api.get('/api/consultas/pendentes')
+
     consultasDisponiveis.value = res.data
       .filter(c => ['agendada', 'confirmada', 'em_atendimento'].includes(c.status))
       .map(c => ({
         ...c,
-        paciente: c.Paciente, // Assumindo que a Consulta inclui o Paciente
-        data_formatada: formatDate(c.data),
+        paciente: c.paciente ? c.paciente.nome : 'Paciente não informado', // ✅ alias correto
+        medico: c.medico ? c.medico.nome : 'Médico não informado',         // ✅ alias correto
+        data_formatada: formatDate(c.data_consulta),                       // ✅ campo correto
       }))
-      
+
     // Pré-seleciona o primeiro, se houver
-    if (consultasDisponiveis.value.length > 0) {
-      novoAtendimento.consultaId = consultasDisponiveis.value[0].id
-    } else {
-      novoAtendimento.consultaId = ''
-    }
-    
+    novoAtendimento.consultaId = consultasDisponiveis.value.length > 0
+      ? consultasDisponiveis.value[0].id
+      : ''
   } catch (error) {
     console.error('Erro ao carregar consultas disponíveis:', error.response?.data || error)
   }
 }
-
 
 const excluirAtendimento = async () => {
   if (!atendimentoSelecionado.value) return
@@ -237,13 +244,23 @@ const atendimentosFiltrados = computed(() =>
   atendimentos.value.filter(a => a.paciente.toLowerCase().includes(busca.value.toLowerCase()))
 )
 
+const etapaAtual = ref(1)
+
+const validarEtapa = () => {
+  if (etapaAtual.value === 1) return !!novoAtendimento.consultaId
+  if (etapaAtual.value === 2) return novoAtendimento.anamnese && novoAtendimento.diagnostico
+  if (etapaAtual.value === 3) return true // prescrição/observações podem ser opcionais
+  return false
+}
+
+
 const abrirModal = () => { 
   carregarConsultasDisponiveis() // Carrega as opções antes de abrir
   mostrarModal.value = true 
 }
 const fecharModal = () => { 
   mostrarModal.value = false 
-  // Limpar formulário
+   etapaAtual.value = 1
   Object.assign(novoAtendimento, {
     consultaId: consultasDisponiveis.value.length > 0 ? consultasDisponiveis.value[0].id : '',
     anamnese: '',
@@ -656,35 +673,91 @@ textarea {
 }
 
 .modal {
-  background: white;
+  background: #fff;
   padding: 25px;
   border-radius: 12px;
-  width: 500px; /* Aumentado para melhor visualização do formulário */
+  width: 400px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15); /* sombra suave */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+.modal h3 {
+  margin-bottom: 20px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #2c3e50; /* azul escuro elegante */
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+
+.modal p {
+  margin: 10px 0;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.modal strong {
+  color: #34495e; /* destaque no label */
+}
+
+.modal p:last-child {
+  margin-top: 15px;
+  font-weight: 500;
+  color: #27ae60; /* verde para status ativo */
+}
+
+.modal p:last-child.inativo {
+  color: #e74c3c; /* vermelho para status inativo */
 }
 
 .modal form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px; /* espaço entre os campos */
+}
+
+.modal label {
+  font-weight: 500;
+  margin-bottom: 4px;
 }
 
 .modal input,
-.modal select,
-.modal textarea { /* Adicionado textarea */
+.modal select {
+  width: 100%;
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #ccc;
 }
 
+
 .botoes-modal {
   display: flex;
-  justify-content: flex-end; /* Alinhado à direita */
-  gap: 10px;
+  justify-content: space-between;
   margin-top: 15px;
 }
 
 .cancelar {
   background: #e5e7eb;
+  color: #333;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.voltar {
+  background: #999;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.proximo {
+  background: #1a73e8;
+  color: #fff;
   padding: 10px 20px;
   border-radius: 8px;
   border: none;
@@ -692,12 +765,19 @@ textarea {
 }
 
 .cadastrar {
-  background: #1a73e8;
-  color: white;
+  background: #10b981;
+  color: #fff;
   padding: 10px 20px;
   border-radius: 8px;
   border: none;
   cursor: pointer;
 }
+
+.proximo:disabled,
+.cadastrar:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
 
 </style>

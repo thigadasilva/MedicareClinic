@@ -25,7 +25,7 @@
       <Card
         title="Médicos"
         subtitle="Cadastrados"
-        :description="store.getters['profissionais/totalProfissionais']"
+        :description="store.getters['profissionais/totalMedicos']"
          :icon="medicosIcon"
       />
  <Card

@@ -40,7 +40,7 @@ const actions = {
         commit('SET_ERROR', null)
 
         try {
-            const response = await api.get('/profissionais')
+            const response = await api.get('/api/profissionais')
             commit('SET_PROFISSIONAIS', response.data)
         } catch (error) {
             console.error('Erro ao buscar profissionais: ', error)
@@ -51,7 +51,7 @@ const actions = {
     },
     async createProfissional({commit}, profissional){
         try{
-            const response = await api.post('/profissionais',{
+            const response = await api.post('/api/profissionais',{
                 nome: profissional.nome,
                 email: profissional.email,
                 crm: profissional.crm,
@@ -71,7 +71,7 @@ const actions = {
     },
     async updateProfissional({commit}, profissional){
         try {
-            const response = await api.patch(`/profissionais/${profissional.id}`, {
+            const response = await api.patch(`/api/profissionais/${profissional.id}`, {
                 nome: profissional.nome,
                 email: profissional.email,
                 crm: profissional.crm,
@@ -91,7 +91,7 @@ const actions = {
     },
     async deleteProfissional({commit}, profissionalId){
         try {
-            await api.delete(`/profissionais/${profissionalId}`)
+            await api.delete(`/api/profissionais/${profissionalId}`)
             commit('DELETE_PROFISSIONAL', profissionalId)
             return { success: true}
         } catch (error) {
@@ -107,6 +107,7 @@ const actions = {
 const getters = {
     profissionais: (state) => state.profissionais,
     totalProfissionais: state => state.profissionais.length,
+    totalMedicos: state => state.profissionais.filter(p => p.perfil === 'medico').length,
     totalAtivos: state => state.profissionais.filter(p => p.ativo).length,
     loading: (state) => state.loading,
     error: (state) => state.error

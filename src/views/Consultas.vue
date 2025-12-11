@@ -24,7 +24,7 @@
 
   <section class="consultas-container">
     <div class="consultas-list">
-      <h3 class="section-title">Consultas de Hoje</h3>
+      <h3 class="section-title">Consultas</h3>
       <div
         v-for="consulta in consultasFiltradas"
         :key="consulta.id"
@@ -136,11 +136,11 @@ const pacientes = ref([])
 const medicos = ref([])
 
 const carregarPacientes = async () => {
-  const res = await api.get('/pacientes')
+  const res = await api.get('/api/pacientes')
   pacientes.value = res.data
 }
 const carregarMedicos = async () => {
-  const res = await api.get('/profissionais/medicos')
+  const res = await api.get('/api/profissionais/medicos')
   medicos.value = res.data
 }
 
@@ -154,7 +154,7 @@ const formatarTipo = (tipo) => {
 
 const carregarConsultas = async () => {
   try {
-    const response = await api.get('/consultas')
+    const response = await api.get('/api/consultas')
     consultas.value = response.data.map(c => ({
       id: c.id,
       paciente: c.paciente?.nome || 'Paciente não informado',
@@ -172,7 +172,7 @@ const carregarConsultas = async () => {
 
 const atualizarStatus = async (novoStatus) => {
   try {
-    await api.patch(`/consultas/${consultaSelecionada.value.id}/status`, {
+    await api.patch(`/api/consultas/${consultaSelecionada.value.id}/status`, {
       status: novoStatus
     })
     alert(`Consulta ${novoStatus} com sucesso!`)
@@ -190,7 +190,7 @@ const excluirConsulta = async () => {
   if (!confirmar) return
 
   try {
-    await api.delete(`/consultas/${consultaSelecionada.value.id}`)
+    await api.delete(`/api/consultas/${consultaSelecionada.value.id}`)
     alert("Consulta excluída com sucesso!")
     carregarConsultas()
     consultaSelecionada.value = null
