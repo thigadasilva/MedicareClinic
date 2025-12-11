@@ -19,8 +19,9 @@ Backend: Node.js, Express, SQLite
 
 ESLint para padronização de código
 
-📂 Estrutura do Projeto
+## 📂 Estrutura do Projeto
 
+```plaintext
 MedicareClinic/
 ├── src/              # Código do frontend (Vue)
 ├── server/           # Código do backend (Node/Express)
