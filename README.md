@@ -30,6 +30,7 @@ MedicareClinic/
 ├── vite.config.js    # Configuração do Vite
 ├── package.json      # Dependências e scripts
 └── .env.example      # Exemplo de variáveis de ambiente
+```
 
 
 ⚙️ Pré-requisitos
