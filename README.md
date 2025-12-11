@@ -45,14 +45,13 @@ Banco de dados SQLite (já integrado) ou MySQL (se configurado no backend)
 📥 Instalação
 Clone o repositório e instale as dependências:
 
-bash
-# Clonar o repositório
+## Clonar o repositório
 git clone https://github.com/thigadasilva/MedicareClinic.git
 
-# Entrar na pasta
+## Entrar na pasta
 cd MedicareClinic
 
-# Instalar dependências
+## Instalar dependências
 npm install
 
 ## ▶️ Executando o Projeto
